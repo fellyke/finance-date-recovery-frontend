@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // API CONFIGURATION
     // --------------------------------------------------------
 
-    const API_URL = "http://localhost:5000/api/records";
+    const API_URL = "https://finance-date-recovery-backend.onrender.com/api/records";
 
 
     // --------------------------------------------------------

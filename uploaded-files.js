@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // ============================================================
 
     const API_URL =
-        "http://localhost:5000/api/uploaded-files";
+        "https://finance-date-recovery-backend.onrender.com/api/uploaded-files";
 
 
     // ============================================================

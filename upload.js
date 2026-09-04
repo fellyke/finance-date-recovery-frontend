@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // API CONFIGURATION
     // ========================================================
 
-    const API_URL = "http://localhost:5000/api/upload";
+    const API_URL = "https://finance-date-recovery-backend.onrender.com/api/upload";
 
 
     // ========================================================

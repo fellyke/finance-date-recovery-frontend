@@ -11,7 +11,7 @@
    API CONFIGURATION
    ============================================================ */
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "https://finance-date-recovery-backend.onrender.com/api";
 
 const APP_CONFIG = {
     appName: "Finance Date Recovery Tool",
