@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Upload Excel | Finance Date Recovery Tool</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- ======================================================
+         SIDEBAR
+    ======================================================= -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+
+            <div class="logo">
+                <img src="assets/logo.png" alt="Logo">
+            </div>
+
+            <div class="brand-name">
+                Finance Recovery
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-menu">
+
+            <a href="dashboard.html" class="menu-item">
+                <span class="menu-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="date-recovery.html" class="menu-item">
+                <span class="menu-icon">⌕</span>
+                <span>Date Recovery</span>
+            </a>
+
+            <a href="upload.html" class="menu-item active">
+                <span class="menu-icon">↑</span>
+                <span>Upload Excel</span>
+            </a>
+
+            <a href="records.html" class="menu-item">
+                <span class="menu-icon">▤</span>
+                <span>Financial Records</span>
+            </a>
+
+            <a href="uploaded-files.html" class="menu-item">
+                <span class="menu-icon">□</span>
+                <span>Uploaded Files</span>
+            </a>
+
+            <a href="history.html" class="menu-item">
+                <span class="menu-icon">◷</span>
+                <span>Recovery History</span>
+            </a>
+
+            <a href="users.html" class="menu-item">
+                <span class="menu-icon">♙</span>
+                <span>Users</span>
+            </a>
+
+            <a href="settings.html" class="menu-item">
+                <span class="menu-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <a href="index.html" class="menu-item logout-item">
+                <span class="menu-icon">⇥</span>
+                <span>Logout</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ======================================================
+         MAIN CONTENT
+    ======================================================= -->
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>Upload Excel File</h1>
+
+                <p class="page-subtitle">
+                    Import financial records or repayment records from an Excel file.
+                </p>
+
+            </div>
+
+
+            <div class="user-area">
+
+                <div class="user-avatar">
+                    A
+                </div>
+
+                <div class="user-info">
+
+                    <strong>Admin</strong>
+
+                    <span>
+                        Administrator
+                    </span>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- ==================================================
+             PAGE CONTENT
+        =================================================== -->
+
+        <section class="page-content">
+
+
+            <!-- ==================================================
+                 UPLOAD FORM
+            =================================================== -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>Upload Information</h2>
+
+                        <p>
+                            Select the type of records contained in your Excel file.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <form id="uploadForm">
+
+
+                    <!-- ==================================================
+                         RECORD TYPE
+                    =================================================== -->
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="uploadType">
+                                Upload Type
+                            </label>
+
+                            <select
+                                id="uploadType"
+                                name="upload_type"
+                                required
+                            >
+
+                                <option value="">
+                                    Select upload type
+                                </option>
+
+                                <option value="financial_records">
+                                    Financial Records
+                                </option>
+
+                                <option value="repayments">
+                                    Repayments
+                                </option>
+
+                            </select>
+
+                            <small id="uploadTypeHelp">
+                                Select what type of information is contained in the Excel file.
+                            </small>
+
+                        </div>
+
+
+                        <!-- ==================================================
+                             LOGBOOK NAME
+                        =================================================== -->
+
+                        <div class="form-group">
+
+                            <label for="logbookName">
+                                Logbook Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="logbookName"
+                                name="logbook_name"
+                                placeholder="Enter logbook name"
+                            >
+
+                        </div>
+
+
+                        <!-- ==================================================
+                             FINANCIAL YEAR
+                        =================================================== -->
+
+                        <div class="form-group">
+
+                            <label for="financialYear">
+                                Financial Year
+                            </label>
+
+                            <input
+                                type="text"
+                                id="financialYear"
+                                name="financial_year"
+                                placeholder="e.g. 2026"
+                            >
+
+                        </div>
+
+
+                        <!-- ==================================================
+                             BRANCH
+                        =================================================== -->
+
+                        <div class="form-group">
+
+                            <label for="branch">
+                                Branch / Department
+                            </label>
+
+                            <input
+                                type="text"
+                                id="branch"
+                                name="branch"
+                                placeholder="Enter branch or department"
+                            >
+
+                        </div>
+
+
+                        <!-- ==================================================
+                             DESCRIPTION
+                        =================================================== -->
+
+                        <div class="form-group">
+
+                            <label for="description">
+                                Description
+                            </label>
+
+                            <input
+                                type="text"
+                                id="description"
+                                name="description"
+                                placeholder="Optional description"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         FILE UPLOAD
+                    =================================================== -->
+
+                    <div class="upload-area">
+
+                        <div class="upload-icon">
+                            ↑
+                        </div>
+
+                        <h3>
+                            Drag and drop your Excel file here
+                        </h3>
+
+                        <p>
+                            or select a file from your computer
+                        </p>
+
+
+                        <input
+                            type="file"
+                            id="excelFile"
+                            name="excel_file"
+                            accept=".xlsx,.xls,.csv"
+                            hidden
+                            required
+                        >
+
+
+                        <label
+                            for="excelFile"
+                            class="btn btn-secondary"
+                        >
+                            Choose File
+                        </label>
+
+
+                        <p id="selectedFile">
+                            No file selected
+                        </p>
+
+
+                        <small>
+                            Supported formats: .xlsx, .xls, .csv
+                        </small>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         UPLOAD ACTIONS
+                    =================================================== -->
+
+                    <div class="search-actions">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            id="uploadButton"
+                        >
+                            Upload File
+                        </button>
+
+
+                        <button
+                            type="reset"
+                            class="btn btn-secondary"
+                            id="clearUploadButton"
+                        >
+                            Clear
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- ==================================================
+                 REQUIRED EXCEL COLUMNS
+            =================================================== -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>
+                            Required Excel Columns
+                        </h2>
+
+                        <p id="requiredColumnsDescription">
+                            Select an upload type to see the required columns.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="column-list"
+                    id="requiredColumns"
+                >
+
+                    <span>
+                        Select upload type
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================================
+                 UPLOAD PREVIEW
+            =================================================== -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>
+                            Upload Preview
+                        </h2>
+
+                        <p>
+                            Selected records will be previewed here before processing.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="empty-state"
+                    id="uploadPreview"
+                >
+
+                    <div class="empty-state-icon">
+                        □
+                    </div>
+
+                    <h3>
+                        No File Uploaded
+                    </h3>
+
+                    <p>
+                        Select an Excel file to preview its records.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- ==========================================================
+     JAVASCRIPT
+=========================================================== -->
+
+<script src="script.js"></script>
+<script src="upload.js"></script>
+
+</body>
+</html>

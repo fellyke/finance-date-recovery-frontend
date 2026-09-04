@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Date Recovery | Finance Date Recovery Tool</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="assets/logo.png" alt="Logo">
+            </div>
+
+            <div class="brand-name">
+                Finance Recovery
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <a href="dashboard.html" class="menu-item">
+                <span class="menu-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="date-recovery.html" class="menu-item active">
+                <span class="menu-icon">⌕</span>
+                <span>Date Recovery</span>
+            </a>
+
+            <a href="upload.html" class="menu-item">
+                <span class="menu-icon">↑</span>
+                <span>Upload Excel </span>
+            </a>
+
+            <a href="records.html" class="menu-item">
+                <span class="menu-icon">▤</span>
+                <span>Financial Records</span>
+            </a>
+
+            <a href="uploaded-files.html" class="menu-item">
+                <span class="menu-icon">□</span>
+                <span>Uploaded Files</span>
+            </a>
+
+            <a href="history.html" class="menu-item">
+                <span class="menu-icon">◷</span>
+                <span>Recovery History</span>
+            </a>
+
+            <a href="users.html" class="menu-item">
+                <span class="menu-icon">♙</span>
+                <span>Users</span>
+            </a>
+
+            <a href="settings.html" class="menu-item">
+                <span class="menu-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="index.html" class="menu-item logout-item">
+                <span class="menu-icon">⇥</span>
+                <span>Logout</span>
+            </a>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <div>
+                <h1>Date Recovery</h1>
+                <p class="page-subtitle">
+                    Search financial records and recover important dates.
+                </p>
+            </div>
+
+            <div class="user-area">
+                <div class="user-avatar">
+                    A
+                </div>
+
+                <div class="user-info">
+                    <strong>Admin</strong>
+                    <span>Administrator</span>
+                </div>
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+        <section class="page-content">
+
+            <!-- SEARCH PANEL -->
+            <div class="panel search-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>Search Financial Records</h2>
+                        <p>
+                            Enter one or more details below to find a financial record.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <form id="dateRecoveryForm">
+
+                    <div class="form-grid">
+
+                        <!-- MEMBER NUMBER -->
+                        <div class="form-group">
+                            <label for="memberNumber">
+                                Member Number
+                            </label>
+
+                            <input
+                                type="text"
+                                id="memberNumber"
+                                name="member_number"
+                                placeholder="Enter member number"
+                                autocomplete="off"
+                            >
+                        </div>
+
+
+                        <!-- MEMBER NAME -->
+                        <div class="form-group">
+                            <label for="memberName">
+                                Member Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="memberName"
+                                name="member_name"
+                                placeholder="Enter member name"
+                                autocomplete="off"
+                            >
+                        </div>
+
+
+                        <!-- LOAN NUMBER -->
+                        <div class="form-group">
+                            <label for="loanNumber">
+                                Loan Number
+                            </label>
+
+                            <input
+                                type="text"
+                                id="loanNumber"
+                                name="loan_number"
+                                placeholder="Enter loan number"
+                                autocomplete="off"
+                            >
+                        </div>
+
+
+                        <!-- LOAN TYPE -->
+                        <div class="form-group">
+                            <label for="loanType">
+                                Loan Type
+                            </label>
+
+                            <select id="loanType" name="loan_type">
+
+                                <option value="">
+                                    Select loan type
+                                </option>
+
+                                <option value="development">
+                                    Development Loan
+                                </option>
+
+                                <option value="business">
+                                    Business Loan
+                                </option>
+
+                                <option value="emergency">
+                                    Emergency Loan
+                                </option>
+
+                                <option value="school">
+                                    School Fees Loan
+                                </option>
+
+                                <option value="personal">
+                                    Personal Loan
+                                </option>
+
+                            </select>
+                        </div>
+
+
+                        <!-- TRANSACTION REFERENCE -->
+                        <div class="form-group">
+                            <label for="transactionReference">
+                                Transaction Reference
+                            </label>
+
+                            <input
+                                type="text"
+                                id="transactionReference"
+                                name="transaction_reference"
+                                placeholder="Enter transaction reference"
+                                autocomplete="off"
+                            >
+                        </div>
+
+
+                        <!-- LOAN DATE -->
+                        <div class="form-group">
+                            <label for="loanDate">
+                                Loan Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="loanDate"
+                                name="loan_date"
+                            >
+                        </div>
+
+
+                        <!-- REPAYMENT DATE -->
+                        <div class="form-group">
+                            <label for="repaymentDate">
+                                Repayment Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="repaymentDate"
+                                name="repayment_date"
+                            >
+                        </div>
+
+
+                        <!-- MATURITY DATE -->
+                        <div class="form-group">
+                            <label for="maturityDate">
+                                Maturity Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="maturityDate"
+                                name="maturity_date"
+                            >
+                        </div>
+
+                    </div>
+
+
+                    <!-- SEARCH ACTIONS -->
+                    <div class="search-actions">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            id="searchButton"
+                        >
+                            Search Records
+                        </button>
+
+                        <button
+                            type="reset"
+                            class="btn btn-secondary"
+                            id="clearButton"
+                        >
+                            Clear
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- SEARCH INFORMATION -->
+            <div class="panel search-help-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>Search Tips</h2>
+                    </div>
+
+                </div>
+
+                <div class="search-tips">
+
+                    <div class="tip-item">
+                        <span class="tip-icon">1</span>
+
+                        <div>
+                            <strong>Use any available information</strong>
+                            <p>
+                                You do not need to complete every field.
+                            </p>
+                        </div>
+                    </div>
+
+
+                    <div class="tip-item">
+                        <span class="tip-icon">2</span>
+
+                        <div>
+                            <strong>Use accurate details</strong>
+                            <p>
+                                Member or loan numbers can help narrow the search.
+                            </p>
+                        </div>
+                    </div>
+
+
+                    <div class="tip-item">
+                        <span class="tip-icon">3</span>
+
+                        <div>
+                            <strong>Check recovered dates</strong>
+                            <p>
+                                Matching records will display their important financial dates.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESULTS PANEL -->
+            <div class="panel results-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>Search Results</h2>
+                        <p id="resultMessage">
+                            No search has been performed yet.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <!-- EMPTY RESULT STATE -->
+                <div
+                    class="empty-state"
+                    id="emptyState"
+                >
+
+                    <div class="empty-state-icon">
+                        ⌕
+                    </div>
+
+                    <h3>No Records to Display</h3>
+
+                    <p>
+                        Enter search information above and click
+                        <strong>Search Records</strong>.
+                    </p>
+
+                </div>
+
+
+                <!-- RESULTS TABLE -->
+                <div
+                    class="table-container"
+                    id="resultsContainer"
+                    style="display: none;"
+                >
+
+                    <table class="data-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Member Name</th>
+                                <th>Member Number</th>
+                                <th>Loan Number</th>
+                                <th>Loan Type</th>
+                                <th>Loan Amount</th>
+                                <th>Loan Date</th>
+                                <th>Repayment Date</th>
+                                <th>Maturity Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="resultsBody">
+                            <!-- Database search results will be inserted here -->
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- RECOVERED RECORD -->
+            <div
+                class="panel recovered-record-panel"
+                id="recoveredRecord"
+                style="display: none;"
+            >
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>Recovered Record</h2>
+
+                        <p>
+                            Selected financial record details.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="record-details-grid">
+
+                    <div class="detail-item">
+                        <span>Member Name</span>
+                        <strong id="recoveredMemberName">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Member Number</span>
+                        <strong id="recoveredMemberNumber">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Loan Number</span>
+                        <strong id="recoveredLoanNumber">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Loan Type</span>
+                        <strong id="recoveredLoanType">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Loan Amount</span>
+                        <strong id="recoveredLoanAmount">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Loan Date</span>
+                        <strong id="recoveredLoanDate">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Repayment Date</span>
+                        <strong id="recoveredRepaymentDate">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Maturity Date</span>
+                        <strong id="recoveredMaturityDate">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Status</span>
+                        <strong id="recoveredStatus">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Source Excel File</span>
+                        <strong id="recoveredSourceFile">—</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="record-actions">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="viewSourceButton"
+                    >
+                        View Source Record
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        id="viewDetailsButton"
+                    >
+                        View Full Details
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script src="date-recovery.js"></script>
+
+</body>
+</html>

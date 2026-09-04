@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>Repayments | Finance Date Recovery Tool</title>
+
+<link rel="stylesheet" href="style.css">
+```
+
+</head>
+
+<body>
+
+<div class="app-layout">
+
+```
+<!-- ======================================================
+     SIDEBAR
+======================================================= -->
+
+<aside class="sidebar">
+
+    <div class="sidebar-header">
+
+        <div class="sidebar-logo">
+
+            <div class="logo-box">
+                FDR
+            </div>
+
+            <div class="brand-text">
+                <strong>Finance Recovery</strong>
+                <span>Date Recovery Tool</span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SIDEBAR MENU -->
+
+    <nav class="sidebar-menu">
+
+        <a href="dashboard.html" class="menu-item">
+            <span class="menu-icon">▦</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="date-recovery.html" class="menu-item">
+            <span class="menu-icon">⌕</span>
+            <span>Date Recovery</span>
+        </a>
+
+        <a href="upload.html" class="menu-item">
+            <span class="menu-icon">↑</span>
+            <span>Upload Records</span>
+        </a>
+
+        <a href="records.html" class="menu-item">
+            <span class="menu-icon">▤</span>
+            <span>Financial Records</span>
+        </a>
+
+        <a href="uploaded-files.html" class="menu-item">
+            <span class="menu-icon">▱</span>
+            <span>Uploaded Files</span>
+        </a>
+
+        <a href="repayments.html" class="menu-item active">
+            <span class="menu-icon">↙</span>
+            <span>Repayments</span>
+        </a>
+
+        <a href="history.html" class="menu-item">
+            <span class="menu-icon">◷</span>
+            <span>Recovery History</span>
+        </a>
+
+        <a href="users.html" class="menu-item">
+            <span class="menu-icon">♙</span>
+            <span>Users</span>
+        </a>
+
+        <a href="settings.html" class="menu-item">
+            <span class="menu-icon">⚙</span>
+            <span>Settings</span>
+        </a>
+
+    </nav>
+
+
+    <!-- SIDEBAR USER -->
+
+    <div class="sidebar-footer">
+
+        <div class="sidebar-user">
+
+            <div class="user-avatar" id="userAvatar">
+                U
+            </div>
+
+            <div class="user-info">
+                <strong id="sidebarUserName">User</strong>
+                <span id="sidebarUserRole">Finance Officer</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</aside>
+
+
+<!-- ======================================================
+     MAIN CONTENT
+======================================================= -->
+
+<main class="main-content">
+
+
+    <!-- ==================================================
+         TOPBAR
+    =================================================== -->
+
+    <header class="topbar">
+
+        <div class="topbar-left">
+
+            <button
+                type="button"
+                class="menu-button"
+                id="menuButton"
+                aria-label="Open menu">
+                ☰
+            </button>
+
+            <div>
+
+                <h1>Repayments</h1>
+
+                <p class="page-subtitle">
+                    Manage and verify loan repayment records.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- TOP USER -->
+
+        <div class="user-area">
+
+            <div class="user-avatar" id="topUserAvatar">
+                U
+            </div>
+
+            <div class="user-info">
+
+                <strong id="topUserName">
+                    User
+                </strong>
+
+                <span id="topUserRole">
+                    Finance Officer
+                </span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ==================================================
+         PAGE CONTENT
+    =================================================== -->
+
+    <div class="page-content">
+
+
+        <!-- ==================================================
+             PAGE HEADER
+        =================================================== -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Repayment Records
+                </h2>
+
+                <p>
+                    Search, review and verify payments made against loans.
+                </p>
+
+            </div>
+
+
+            <div class="page-header-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    id="refreshRepaymentsBtn">
+                    Refresh
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="recoverDateBtn">
+                    Search Date
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             STATISTICS
+        =================================================== -->
+
+        <div class="stats-grid">
+
+
+            <!-- TOTAL REPAYMENTS -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon stat-blue">
+                    ↙
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        Total Repayments
+                    </span>
+
+                    <strong id="totalRepayments">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL AMOUNT -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon stat-green">
+                    KES
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        Total Amount
+                    </span>
+
+                    <strong id="totalRepaymentAmount">
+                        KES 0.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- UNVERIFIED -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon stat-orange">
+                    ?
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        Unverified Dates
+                    </span>
+
+                    <strong id="unverifiedRepayments">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- VERIFIED -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon stat-red">
+                    ✓
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        Verified Records
+                    </span>
+
+                    <strong id="verifiedRepayments">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             SEARCH PANEL
+        =================================================== -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h3>
+                        Search Repayments
+                    </h3>
+
+                    <p>
+                        Enter any available information to find a repayment record.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form
+                id="repaymentSearchForm"
+                class="repayment-search-form">
+
+
+                <!-- CUSTOMER -->
+
+                <div class="form-group">
+
+                    <label for="customer">
+                        Customer / Member
+                    </label>
+
+                    <input
+                        type="text"
+                        id="customer"
+                        name="customer"
+                        placeholder="Enter customer name"
+                        autocomplete="off">
+
+                </div>
+
+
+                <!-- LOAN NUMBER -->
+
+                <div class="form-group">
+
+                    <label for="loanNumber">
+                        Loan Number
+                    </label>
+
+                    <input
+                        type="text"
+                        id="loanNumber"
+                        name="loanNumber"
+                        placeholder="Enter loan number"
+                        autocomplete="off">
+
+                </div>
+
+
+                <!-- REFERENCE -->
+
+                <div class="form-group">
+
+                    <label for="referenceNumber">
+                        Transaction Reference
+                    </label>
+
+                    <input
+                        type="text"
+                        id="referenceNumber"
+                        name="referenceNumber"
+                        placeholder="Enter transaction reference"
+                        autocomplete="off">
+
+                </div>
+
+
+                <!-- RECEIPT -->
+
+                <div class="form-group">
+
+                    <label for="receiptNumber">
+                        Receipt Number
+                    </label>
+
+                    <input
+                        type="text"
+                        id="receiptNumber"
+                        name="receiptNumber"
+                        placeholder="Enter receipt number"
+                        autocomplete="off">
+
+                </div>
+
+
+                <!-- AMOUNT -->
+
+                <div class="form-group">
+
+                    <label for="amount">
+                        Amount
+                    </label>
+
+                    <input
+                        type="number"
+                        id="amount"
+                        name="amount"
+                        min="0"
+                        step="0.01"
+                        placeholder="Enter amount">
+
+                </div>
+
+
+                <!-- PAYMENT METHOD -->
+
+                <div class="form-group">
+
+                    <label for="paymentMethod">
+                        Payment Method
+                    </label>
+
+                    <select
+                        id="paymentMethod"
+                        name="paymentMethod">
+
+                        <option value="">
+                            All payment methods
+                        </option>
+
+                        <option value="MPESA">
+                            M-Pesa
+                        </option>
+
+                        <option value="BANK">
+                            Bank
+                        </option>
+
+                        <option value="CASH">
+                            Cash
+                        </option>
+
+                        <option value="CHEQUE">
+                            Cheque
+                        </option>
+
+                        <option value="TRANSFER">
+                            Bank Transfer
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- DATE FROM -->
+
+                <div class="form-group">
+
+                    <label for="dateFrom">
+                        Date From
+                    </label>
+
+                    <input
+                        type="date"
+                        id="dateFrom"
+                        name="dateFrom">
+
+                </div>
+
+
+                <!-- DATE TO -->
+
+                <div class="form-group">
+
+                    <label for="dateTo">
+                        Date To
+                    </label>
+
+                    <input
+                        type="date"
+                        id="dateTo"
+                        name="dateTo">
+
+                </div>
+
+
+                <!-- SEARCH ACTIONS -->
+
+                <div class="repayment-search-actions">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="clearSearchBtn">
+                        Clear
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary">
+                        Search Repayments
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- ==================================================
+             REPAYMENT RECORDS
+        =================================================== -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h3>
+                        Repayment Records
+                    </h3>
+
+                    <p id="resultSummary">
+                        Loading repayment records...
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    id="exportRepaymentsBtn">
+                    Export
+                </button>
+
+            </div>
+
+
+            <!-- TABLE WRAPPER -->
+
+            <div class="table-container">
+
+                <table class="data-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#</th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Loan Number
+                            </th>
+
+                            <th>
+                                Repayment Date
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Method
+                            </th>
+
+                            <th>
+                                Reference
+                            </th>
+
+                            <th>
+                                Receipt
+                            </th>
+
+                            <th>
+                                Balance
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="repaymentsTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="11"
+                                class="table-message">
+
+                                Loading repayment records...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- ==================================================
+                 PAGINATION
+            =================================================== -->
+
+            <div class="pagination">
+
+                <div class="pagination-info">
+
+                    Showing
+
+                    <strong id="paginationStart">
+                        0
+                    </strong>
+
+                    -
+
+                    <strong id="paginationEnd">
+                        0
+                    </strong>
+
+                    of
+
+                    <strong id="paginationTotal">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="pagination-buttons">
+
+                    <button
+                        type="button"
+                        id="previousPageBtn"
+                        disabled>
+                        Previous
+                    </button>
+
+                    <span id="currentPage">
+                        1
+                    </span>
+
+                    <button
+                        type="button"
+                        id="nextPageBtn"
+                        disabled>
+                        Next
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             DATE RECOVERY INFORMATION
+        =================================================== -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h3>
+                        Repayment Date Recovery
+                    </h3>
+
+                    <p>
+                        Use repayment information to recover an unknown transaction date.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="recovery-info-grid">
+
+
+                <!-- STEP 1 -->
+
+                <div class="recovery-info-item">
+
+                    <div class="step-number">
+                        01
+                    </div>
+
+                    <div>
+
+                        <h4>
+                            Find the payment
+                        </h4>
+
+                        <p>
+                            Search using customer, loan number,
+                            amount or reference.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 2 -->
+
+                <div class="recovery-info-item">
+
+                    <div class="step-number">
+                        02
+                    </div>
+
+                    <div>
+
+                        <h4>
+                            Compare records
+                        </h4>
+
+                        <p>
+                            Compare the repayment with uploaded
+                            financial records.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 3 -->
+
+                <div class="recovery-info-item">
+
+                    <div class="step-number">
+                        03
+                    </div>
+
+                    <div>
+
+                        <h4>
+                            Verify the date
+                        </h4>
+
+                        <p>
+                            Confirm the recovered date against
+                            the original source.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 4 -->
+
+                <div class="recovery-info-item">
+
+                    <div class="step-number">
+                        04
+                    </div>
+
+                    <div>
+
+                        <h4>
+                            Trace the source
+                        </h4>
+
+                        <p>
+                            Identify the file, sheet and row
+                            containing the transaction.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <!-- ==================================================
+         FOOTER
+    =================================================== -->
+
+    <footer class="footer">
+
+        <strong>
+            Finance Date Recovery Tool
+        </strong>
+
+        <span>
+            Financial Record Recovery & Verification Platform
+        </span>
+
+    </footer>
+
+</main>
+```
+
+</div>
+
+<!-- ==========================================================
+     JAVASCRIPT
+=========================================================== -->
+
+<script src="script.js"></script>
+
+<script src="repayments.js"></script>
+
+</body>
+</html>

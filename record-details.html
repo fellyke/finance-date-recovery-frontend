@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Record Details | Finance Date Recovery Tool</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+
+            <div class="logo">
+                <img src="assets/logo.png" alt="Logo">
+            </div>
+
+            <div class="brand-name">
+                Finance Recovery
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-menu">
+
+            <a href="dashboard.html" class="menu-item">
+                <span class="menu-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="date-recovery.html" class="menu-item">
+                <span class="menu-icon">⌕</span>
+                <span>Date Recovery</span>
+            </a>
+
+            <a href="upload.html" class="menu-item">
+                <span class="menu-icon">↑</span>
+                <span>Upload Excel </span>
+            </a>
+
+            <a href="records.html" class="menu-item active">
+                <span class="menu-icon">▤</span>
+                <span>Financial Records</span>
+            </a>
+
+            <a href="uploaded-files.html" class="menu-item">
+                <span class="menu-icon">□</span>
+                <span>Uploaded Files</span>
+            </a>
+
+            <a href="history.html" class="menu-item">
+                <span class="menu-icon">◷</span>
+                <span>Recovery History</span>
+            </a>
+
+            <a href="users.html" class="menu-item">
+                <span class="menu-icon">♙</span>
+                <span>Users</span>
+            </a>
+
+            <a href="settings.html" class="menu-item">
+                <span class="menu-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <a href="index.html" class="menu-item logout-item">
+                <span class="menu-icon">⇥</span>
+                <span>Logout</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <h1>Record Details</h1>
+
+                <p class="page-subtitle">
+                    View complete financial record information.
+                </p>
+            </div>
+
+
+            <div class="user-area">
+
+                <div class="user-avatar">A</div>
+
+                <div class="user-info">
+                    <strong>Admin</strong>
+                    <span>Administrator</span>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <section class="page-content">
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>Member Information</h2>
+
+                        <p>
+                            Financial record member details.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="record-details-grid">
+
+                    <div class="detail-item">
+                        <span>Member Name</span>
+                        <strong id="detailMemberName">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Member Number</span>
+                        <strong id="detailMemberNumber">—</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>Loan Information</h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="record-details-grid">
+
+                    <div class="detail-item">
+                        <span>Loan Number</span>
+                        <strong id="detailLoanNumber">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Loan Type</span>
+                        <strong id="detailLoanType">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Loan Amount</span>
+                        <strong id="detailLoanAmount">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Status</span>
+                        <strong id="detailStatus">—</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>Important Dates</h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="record-details-grid">
+
+                    <div class="detail-item">
+                        <span>Loan Date</span>
+                        <strong id="detailLoanDate">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Transaction Date</span>
+                        <strong id="detailTransactionDate">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Repayment Date</span>
+                        <strong id="detailRepaymentDate">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Maturity Date</span>
+                        <strong id="detailMaturityDate">—</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>Source Information</h2>
+                    </div>
+
+                </div>
+
+
+                <div class="record-details-grid">
+
+                    <div class="detail-item">
+                        <span>Source Excel File</span>
+                        <strong id="detailSourceFile">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Date Imported</span>
+                        <strong id="detailImportedDate">—</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Verification Status</span>
+                        <strong id="detailVerificationStatus">—</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="record-actions">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="sourceRecordButton"
+                    >
+                        View Source Record
+                    </button>
+
+                    <a
+                        href="records.html"
+                        class="btn btn-primary"
+                    >
+                        Back to Records
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="script.js"></script>
+<script src="records-details.js"></script>
+</body>
+</html>

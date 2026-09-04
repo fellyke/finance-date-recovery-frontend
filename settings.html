@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Settings | Finance Date Recovery Tool</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+
+            <div class="logo">
+                <img src="assets/logo.png" alt="Logo">
+            </div>
+
+            <div class="brand-name">
+                Finance Recovery
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-menu">
+
+            <a href="dashboard.html" class="menu-item">
+                <span class="menu-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="date-recovery.html" class="menu-item">
+                <span class="menu-icon">⌕</span>
+                <span>Date Recovery</span>
+            </a>
+
+            <a href="upload.html" class="menu-item">
+                <span class="menu-icon">↑</span>
+                <span>Upload Excel </span>
+            </a>
+
+            <a href="records.html" class="menu-item">
+                <span class="menu-icon">▤</span>
+                <span>Financial Records</span>
+            </a>
+
+            <a href="uploaded-files.html" class="menu-item">
+                <span class="menu-icon">□</span>
+                <span>Uploaded Files</span>
+            </a>
+
+            <a href="history.html" class="menu-item">
+                <span class="menu-icon">◷</span>
+                <span>Recovery History</span>
+            </a>
+
+            <a href="users.html" class="menu-item">
+                <span class="menu-icon">♙</span>
+                <span>Users</span>
+            </a>
+
+            <a href="settings.html" class="menu-item active">
+                <span class="menu-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <a href="index.html" class="menu-item logout-item">
+                <span class="menu-icon">⇥</span>
+                <span>Logout</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>Settings</h1>
+
+                <p class="page-subtitle">
+                    Configure system preferences.
+                </p>
+
+            </div>
+
+
+            <div class="user-area">
+
+                <div class="user-avatar">A</div>
+
+                <div class="user-info">
+                    <strong>Admin</strong>
+                    <span>Administrator</span>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <section class="page-content">
+
+            <!-- SYSTEM SETTINGS -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>System Settings</h2>
+
+                        <p>
+                            General configuration for the application.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <form id="settingsForm">
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="systemName">
+                                System Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="systemName"
+                                value="Finance Date Recovery Tool"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="recordsPerPage">
+                                Records Per Page
+                            </label>
+
+                            <select id="recordsPerPage">
+
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="search-actions">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Save Settings
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- UPLOAD SETTINGS -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>File Upload Settings</h2>
+
+                        <p>
+                            Configure supported file upload options.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-list">
+
+                    <div class="setting-row">
+
+                        <div>
+
+                            <strong>Excel Files</strong>
+
+                            <p>
+                                Allow .xlsx and .xls files.
+                            </p>
+
+                        </div>
+
+                        <span class="badge badge-success">
+                            Enabled
+                        </span>
+
+                    </div>
+
+
+                    <div class="setting-row">
+
+                        <div>
+
+                            <strong>CSV Files</strong>
+
+                            <p>
+                                Allow CSV financial logbooks.
+                            </p>
+
+                        </div>
+
+                        <span class="badge badge-success">
+                            Enabled
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SECURITY -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>Security</h2>
+
+                        <p>
+                            Security and access control settings.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-list">
+
+                    <div class="setting-row">
+
+                        <div>
+
+                            <strong>Session Authentication</strong>
+
+                            <p>
+                                Users must authenticate before accessing the system.
+                            </p>
+
+                        </div>
+
+                        <span class="badge badge-success">
+                            Enabled
+                        </span>
+
+                    </div>
+
+
+                    <div class="setting-row">
+
+                        <div>
+
+                            <strong>Recovery Audit Trail</strong>
+
+                            <p>
+                                Record searches should be logged.
+                            </p>
+
+                        </div>
+
+                        <span class="badge badge-success">
+                            Enabled
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="script.js"></script>
+
+<script src="settings.js"></script>
+</body>
+</html>

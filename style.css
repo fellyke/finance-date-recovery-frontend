@@ -1,0 +1,2716 @@
+/* =========================================================
+   FINANCE DATE RECOVERY TOOL
+   GLOBAL STYLESHEET
+   ========================================================= */
+
+
+/* =========================================================
+   1. RESET & BASE STYLES
+   ========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f6f9;
+    color: #1f2937;
+    line-height: 1.5;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+input,
+select,
+textarea {
+    outline: none;
+}
+
+
+/* =========================================================
+   2. LOGIN PAGE
+   ========================================================= */
+
+.login-page {
+    min-height: 100vh;
+    background: #f4f6f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 420px;
+}
+
+.login-card {
+    background: #ffffff;
+    border: 1px solid #e2e6eb;
+    border-radius: 10px;
+    padding: 38px 40px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+}
+
+.login-logo {
+    width: 75px;
+    height: 75px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.login-heading {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-heading h1 {
+    color: #172033;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 7px;
+}
+
+.login-heading p {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.login-card .form-group {
+    margin-bottom: 20px;
+}
+
+.login-card .form-group label {
+    display: block;
+    margin-bottom: 7px;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.login-card .form-group input {
+    width: 100%;
+    height: 44px;
+    padding: 0 13px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #111827;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.login-card .form-group input::placeholder {
+    color: #9ca3af;
+}
+
+.login-card .form-group input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+.password-field {
+    position: relative;
+    width: 100%;
+}
+
+.password-field input {
+    padding-right: 65px !important;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.password-toggle:hover {
+    color: #1d4ed8;
+}
+
+.login-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 2px 0 22px;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #6b7280;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.remember-me input {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
+.login-button {
+    width: 100%;
+    height: 44px;
+    font-size: 14px;
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: 22px;
+}
+
+.login-footer p {
+    color: #6b7280;
+    font-size: 12px;
+    margin-bottom: 3px;
+}
+
+.login-footer span {
+    color: #9ca3af;
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   3. APPLICATION LAYOUT
+   ========================================================= */
+
+.app-layout {
+    min-height: 100vh;
+    display: flex;
+}
+
+
+/* =========================================================
+   4. SIDEBAR
+   ========================================================= */
+
+.sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background: #111827;
+    color: #ffffff;
+
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    z-index: 1000;
+}
+
+.sidebar-header {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 0 22px;
+
+    border-bottom: 1px solid #273244;
+}
+
+.sidebar-header .logo {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-header .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.brand-name {
+    font-size: 17px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.sidebar-menu {
+    flex: 1;
+    padding: 20px 12px;
+    overflow-y: auto;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    padding: 12px 14px;
+    margin-bottom: 5px;
+
+    border-radius: 7px;
+
+    color: #cbd5e1;
+    font-size: 14px;
+
+    transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+    background: #1f2937;
+    color: #ffffff;
+}
+
+.menu-item.active {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.menu-icon {
+    width: 22px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.sidebar-footer {
+    padding: 15px 12px;
+    border-top: 1px solid #273244;
+}
+
+.logout-item:hover {
+    background: #7f1d1d;
+}
+
+
+/* =========================================================
+   5. MAIN CONTENT
+   ========================================================= */
+
+.main-content {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    min-height: 100vh;
+}
+
+
+/* =========================================================
+   6. TOP BAR
+   ========================================================= */
+
+.topbar {
+    min-height: 80px;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 18px 30px;
+}
+
+.topbar h1 {
+    font-size: 24px;
+    color: #111827;
+    margin-bottom: 3px;
+}
+
+.page-subtitle {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.user-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: 700;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-info strong {
+    font-size: 14px;
+    color: #111827;
+}
+
+.user-info span {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   7. PAGE CONTENT
+   ========================================================= */
+
+.page-content {
+    padding: 30px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   8. PANELS
+   ========================================================= */
+
+.panel {
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    margin-bottom: 22px;
+
+    overflow: hidden;
+}
+
+.panel-header {
+    min-height: 75px;
+
+    padding: 20px 24px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+.panel-header h2 {
+    font-size: 18px;
+    color: #111827;
+    margin-bottom: 3px;
+}
+
+.panel-header h3 {
+    font-size: 17px;
+    color: #111827;
+    margin-bottom: 3px;
+}
+
+.panel-header p {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   8A. REPAYMENT SEARCH FORM
+   ========================================================= */
+
+/*
+   EXACTLY MATCHES repayments.html
+
+   Desktop:
+
+   Customer       Loan Number       Reference       Receipt
+   Amount         Payment Method    Date From       Date To
+*/
+
+.repayment-search-form {
+    width: 100%;
+
+    padding: 24px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 20px 24px;
+
+    align-items: end;
+}
+
+.repayment-search-form .form-group {
+    width: 100%;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.repayment-search-form .form-group label {
+    display: block;
+
+    color: #374151;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+.repayment-search-form .form-group input,
+.repayment-search-form .form-group select {
+    display: block;
+
+    width: 100%;
+    height: 44px;
+    min-height: 44px;
+
+    padding: 0 13px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+
+    background: #ffffff;
+    color: #111827;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.repayment-search-form .form-group input::placeholder {
+    color: #9ca3af;
+}
+
+.repayment-search-form .form-group input:hover,
+.repayment-search-form .form-group select:hover {
+    border-color: #9ca3af;
+}
+
+.repayment-search-form .form-group input:focus,
+.repayment-search-form .form-group select:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+.repayment-search-form .form-group select {
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   8B. REPAYMENT SEARCH ACTIONS
+   ========================================================= */
+
+.repayment-search-actions {
+    grid-column: 1 / -1;
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 2px;
+    padding-top: 20px;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+.repayment-search-actions .btn {
+    min-width: 120px;
+}
+
+
+/* =========================================================
+   8C. REPAYMENT TABLE
+   ========================================================= */
+
+/*
+   IMPORTANT:
+   repayments.html uses:
+
+       <div class="table-container">
+
+   NOT:
+
+       .repayments-table-container
+
+   Therefore the repayment table styling is attached
+   directly to the repayment panel using the structure
+   that actually exists in the HTML.
+*/
+
+.panel:has(#repaymentsTableBody) .table-container {
+    width: 100%;
+    overflow-x: auto;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+.panel:has(#repaymentsTableBody) .data-table {
+    width: 100%;
+    min-width: 1150px;
+
+    border-collapse: collapse;
+}
+
+.panel:has(#repaymentsTableBody) .data-table th {
+    padding: 13px 15px;
+
+    background: #f9fafb;
+
+    color: #374151;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-align: left;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    white-space: nowrap;
+}
+
+.panel:has(#repaymentsTableBody) .data-table td {
+    padding: 13px 15px;
+
+    background: #ffffff;
+
+    color: #4b5563;
+
+    font-size: 13px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    white-space: nowrap;
+}
+
+.panel:has(#repaymentsTableBody) .data-table tbody tr:hover td {
+    background: #f9fafb;
+}
+
+.panel:has(#repaymentsTableBody) .data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   8D. REPAYMENT TABLE MESSAGE
+   ========================================================= */
+
+.panel:has(#repaymentsTableBody) .table-message {
+    text-align: center;
+
+    padding: 45px 20px !important;
+
+    color: #6b7280;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   8E. REPAYMENT ACTION BUTTON
+   ========================================================= */
+
+.panel:has(#repaymentsTableBody) .data-table .btn {
+    min-height: 34px;
+
+    padding: 7px 13px;
+
+    font-size: 12px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   8F. REPAYMENT STATUS
+   ========================================================= */
+
+.repayment-status {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 80px;
+
+    padding: 4px 9px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   8G. REPAYMENT INFORMATION GRID
+   ========================================================= */
+
+.recovery-info-grid {
+    padding: 24px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+.recovery-info-item {
+    min-width: 0;
+
+    padding: 18px;
+
+    background: #f9fafb;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 8px;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 13px;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.recovery-info-item:hover {
+    border-color: #bfdbfe;
+
+    background: #f8fbff;
+}
+
+.step-number {
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+
+    background: #eff6ff;
+    color: #2563eb;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.recovery-info-item h4 {
+    margin-bottom: 4px;
+
+    color: #374151;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.recovery-info-item p {
+    color: #6b7280;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   8H. REPAYMENT TABLET
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+    .repayment-search-form {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 18px 20px;
+    }
+
+    .recovery-info-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+/* =========================================================
+   8I. REPAYMENT MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .repayment-search-form {
+        grid-template-columns: 1fr;
+
+        padding: 18px;
+
+        gap: 16px;
+    }
+
+    .repayment-search-actions {
+        grid-column: 1;
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        justify-content: stretch;
+
+        gap: 9px;
+
+        padding-top: 16px;
+    }
+
+    .repayment-search-actions .btn {
+        width: 100%;
+
+        min-width: 0;
+    }
+
+    .recovery-info-grid {
+        grid-template-columns: 1fr;
+
+        padding: 18px;
+
+        gap: 12px;
+    }
+
+    .recovery-info-item {
+        padding: 15px;
+    }
+
+}
+
+
+/* =========================================================
+   9. STATISTICS CARDS
+   ========================================================= */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 18px;
+
+    margin-bottom: 22px;
+}
+
+.stat-card {
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    padding: 22px;
+
+    min-height: 125px;
+
+    display: flex;
+    align-items: center;
+
+    transition: 0.2s ease;
+}
+
+.stat-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.stat-content span {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.stat-content strong {
+    font-size: 28px;
+    color: #111827;
+}
+
+
+/* =========================================================
+   10. GENERAL FORMS
+   ========================================================= */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.records-toolbar input,
+.records-toolbar select {
+    width: 100%;
+
+    min-height: 42px;
+
+    padding: 10px 12px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+
+    background: #ffffff;
+    color: #111827;
+
+    font-size: 14px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.records-toolbar input:focus,
+.records-toolbar select:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+.form-grid {
+    padding: 24px;
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 20px;
+}
+
+
+/* =========================================================
+   11. BUTTONS
+   ========================================================= */
+
+.btn {
+    min-height: 40px;
+
+    padding: 9px 17px;
+
+    border-radius: 6px;
+
+    border: 1px solid transparent;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+
+    border-color: #2563eb;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+.btn-secondary {
+    background: #ffffff;
+    color: #374151;
+
+    border-color: #d1d5db;
+}
+
+.btn-secondary:hover {
+    background: #f3f4f6;
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: #ffffff;
+
+    border-color: #dc2626;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+}
+
+.btn-success {
+    background: #16a34a;
+    color: #ffffff;
+
+    border-color: #16a34a;
+}
+
+.btn-success:hover {
+    background: #15803d;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+
+/* =========================================================
+   12. FORM ACTIONS
+   ========================================================= */
+
+.search-actions {
+    padding: 0 24px 24px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+/* =========================================================
+   13. SEARCH TOOLBAR
+   ========================================================= */
+
+.records-toolbar {
+    padding: 18px 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    width: 100%;
+    max-width: 650px;
+}
+
+.search-box input {
+    flex: 1;
+}
+
+
+/* =========================================================
+   14. TABLES
+   ========================================================= */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 950px;
+}
+
+.data-table th {
+    background: #f9fafb;
+
+    color: #374151;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-align: left;
+
+    padding: 13px 15px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: 13px 15px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    font-size: 13px;
+
+    color: #4b5563;
+
+    white-space: nowrap;
+}
+
+.data-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   15. STATUS BADGES
+   ========================================================= */
+
+.badge {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 4px 9px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-info {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-neutral {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+
+/* =========================================================
+   16. EMPTY STATES
+   ========================================================= */
+
+.empty-state {
+    padding: 60px 25px;
+
+    text-align: center;
+}
+
+.empty-state-icon {
+    width: 55px;
+    height: 55px;
+
+    margin: 0 auto 15px;
+
+    border-radius: 50%;
+
+    background: #f3f4f6;
+    color: #6b7280;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 23px;
+}
+
+.empty-state h3 {
+    font-size: 16px;
+
+    color: #374151;
+
+    margin-bottom: 6px;
+}
+
+.empty-state p {
+    font-size: 13px;
+
+    color: #6b7280;
+
+    max-width: 500px;
+
+    margin: 0 auto 18px;
+}
+
+
+/* =========================================================
+   17. QUICK ACTIONS
+   ========================================================= */
+
+.quick-actions {
+    padding: 22px;
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 15px;
+}
+
+.quick-action {
+    border: 1px solid #e5e7eb;
+
+    border-radius: 8px;
+
+    padding: 18px;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 13px;
+
+    transition: all 0.2s ease;
+}
+
+.quick-action:hover {
+    border-color: #2563eb;
+
+    background: #f8fbff;
+}
+
+.quick-action-icon {
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
+
+    border-radius: 7px;
+
+    background: #eff6ff;
+    color: #2563eb;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+}
+
+.quick-action strong {
+    display: block;
+
+    font-size: 14px;
+
+    color: #111827;
+
+    margin-bottom: 3px;
+}
+
+.quick-action p {
+    color: #6b7280;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   18. SEARCH TIPS
+   ========================================================= */
+
+.search-tips {
+    padding: 22px;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 20px;
+}
+
+.tip-item {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+}
+
+.tip-icon {
+    width: 30px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    background: #eff6ff;
+    color: #2563eb;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.tip-item strong {
+    display: block;
+
+    font-size: 13px;
+
+    color: #374151;
+
+    margin-bottom: 3px;
+}
+
+.tip-item p {
+    color: #6b7280;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   19. RECORD DETAILS
+   ========================================================= */
+
+.record-details-grid {
+    padding: 24px;
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 0;
+}
+
+.detail-item {
+    padding: 15px 0;
+
+    border-bottom: 1px solid #f0f1f3;
+
+    margin-right: 25px;
+}
+
+.detail-item span {
+    display: block;
+
+    font-size: 12px;
+
+    color: #6b7280;
+
+    margin-bottom: 4px;
+}
+
+.detail-item strong {
+    font-size: 14px;
+
+    color: #111827;
+
+    word-break: break-word;
+}
+
+.record-actions {
+    padding: 0 24px 24px;
+
+    display: flex;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+}
+
+
+/* =========================================================
+   20. UPLOAD AREA
+   ========================================================= */
+
+.upload-area {
+    margin: 0 24px 24px;
+
+    border: 2px dashed #d1d5db;
+
+    border-radius: 10px;
+
+    min-height: 240px;
+
+    padding: 35px;
+
+    text-align: center;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition: all 0.2s ease;
+}
+
+.upload-area:hover {
+    border-color: #2563eb;
+
+    background: #f8fbff;
+}
+
+.upload-icon {
+    width: 55px;
+    height: 55px;
+
+    border-radius: 50%;
+
+    background: #eff6ff;
+    color: #2563eb;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 25px;
+
+    margin-bottom: 15px;
+}
+
+.upload-area h3 {
+    font-size: 16px;
+
+    color: #374151;
+
+    margin-bottom: 5px;
+}
+
+.upload-area p {
+    font-size: 13px;
+
+    color: #6b7280;
+
+    margin-bottom: 12px;
+}
+
+.upload-area small {
+    color: #9ca3af;
+
+    font-size: 11px;
+
+    margin-top: 8px;
+}
+
+#selectedFile {
+    margin-top: 15px;
+
+    font-weight: 600;
+
+    color: #374151;
+}
+
+
+/* =========================================================
+   21. EXCEL COLUMN LIST
+   ========================================================= */
+
+.column-list {
+    padding: 24px;
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+.column-list span {
+    padding: 7px 11px;
+
+    background: #f3f4f6;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 5px;
+
+    color: #4b5563;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   22. FILE INFORMATION
+   ========================================================= */
+
+.file-info {
+    padding: 20px 24px;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 15px;
+}
+
+.file-info-item {
+    padding: 15px;
+
+    background: #f9fafb;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 7px;
+}
+
+.file-info-item span {
+    display: block;
+
+    font-size: 11px;
+
+    color: #6b7280;
+
+    margin-bottom: 5px;
+}
+
+.file-info-item strong {
+    display: block;
+
+    font-size: 14px;
+
+    color: #111827;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   23. SETTINGS
+   ========================================================= */
+
+.settings-list {
+    padding: 0 24px;
+}
+
+.setting-row {
+    min-height: 75px;
+
+    padding: 17px 0;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+.setting-row:last-child {
+    border-bottom: none;
+}
+
+.setting-row strong {
+    display: block;
+
+    color: #374151;
+
+    font-size: 14px;
+
+    margin-bottom: 3px;
+}
+
+.setting-row p {
+    color: #6b7280;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   24. TOGGLE SWITCH
+   ========================================================= */
+
+.switch {
+    position: relative;
+
+    display: inline-block;
+
+    width: 44px;
+    height: 24px;
+
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+
+    cursor: pointer;
+
+    inset: 0;
+
+    background: #d1d5db;
+
+    border-radius: 30px;
+
+    transition: 0.2s ease;
+}
+
+.slider::before {
+    content: "";
+
+    position: absolute;
+
+    height: 18px;
+    width: 18px;
+
+    left: 3px;
+    top: 3px;
+
+    background: #ffffff;
+
+    border-radius: 50%;
+
+    transition: 0.2s ease;
+}
+
+.switch input:checked + .slider {
+    background: #2563eb;
+}
+
+.switch input:checked + .slider::before {
+    transform: translateX(20px);
+}
+
+
+/* =========================================================
+   25. ERROR & SUCCESS MESSAGES
+   ========================================================= */
+
+.form-error {
+    color: #dc2626;
+
+    background: #fef2f2;
+
+    border: 1px solid #fecaca;
+
+    border-radius: 6px;
+
+    padding: 9px 11px;
+
+    font-size: 12px;
+
+    margin-bottom: 15px;
+
+    display: none;
+}
+
+.form-success {
+    color: #166534;
+
+    background: #f0fdf4;
+
+    border: 1px solid #bbf7d0;
+
+    border-radius: 6px;
+
+    padding: 9px 11px;
+
+    font-size: 12px;
+
+    margin-bottom: 15px;
+}
+
+
+/* =========================================================
+   26. MODAL
+   ========================================================= */
+
+.modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(17, 24, 39, 0.55);
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 2000;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal {
+    width: 100%;
+
+    max-width: 550px;
+
+    background: #ffffff;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    padding: 18px 22px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+}
+
+.modal-header h2 {
+    font-size: 17px;
+
+    color: #111827;
+}
+
+.modal-close {
+    border: none;
+
+    background: transparent;
+
+    font-size: 22px;
+
+    color: #6b7280;
+}
+
+.modal-close:hover {
+    color: #111827;
+}
+
+.modal-body {
+    padding: 22px;
+}
+
+.modal-footer {
+    padding: 15px 22px;
+
+    border-top: 1px solid #e5e7eb;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   27. LOADING
+   ========================================================= */
+
+.loading {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 35px;
+
+    color: #6b7280;
+
+    font-size: 13px;
+}
+
+.spinner {
+    width: 22px;
+    height: 22px;
+
+    border: 3px solid #e5e7eb;
+
+    border-top-color: #2563eb;
+
+    border-radius: 50%;
+
+    animation: spin 0.8s linear infinite;
+
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   28. PAGINATION
+   ========================================================= */
+
+.pagination {
+    padding: 18px 24px;
+
+    border-top: 1px solid #e5e7eb;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+.pagination-info {
+    color: #6b7280;
+
+    font-size: 12px;
+}
+
+.pagination-buttons {
+    display: flex;
+
+    gap: 5px;
+}
+
+.pagination-buttons button {
+    min-width: 34px;
+    height: 34px;
+
+    border: 1px solid #d1d5db;
+
+    background: #ffffff;
+
+    border-radius: 5px;
+
+    color: #374151;
+}
+
+.pagination-buttons button:hover,
+.pagination-buttons button.active {
+    background: #2563eb;
+
+    color: #ffffff;
+
+    border-color: #2563eb;
+}
+
+.pagination-buttons button:disabled {
+    opacity: 0.55;
+
+    cursor: not-allowed;
+
+    background: #f9fafb;
+
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   29. ACTION LINKS
+   ========================================================= */
+
+.action-link {
+    color: #2563eb;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+.action-link:hover {
+    color: #1d4ed8;
+
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   30. INFORMATION BOX
+   ========================================================= */
+
+.info-box {
+    margin: 0 24px 24px;
+
+    padding: 15px 17px;
+
+    background: #eff6ff;
+
+    border: 1px solid #bfdbfe;
+
+    border-radius: 7px;
+
+    color: #1e40af;
+
+    font-size: 12px;
+}
+
+.info-box strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   31. WARNING BOX
+   ========================================================= */
+
+.warning-box {
+    margin: 0 24px 24px;
+
+    padding: 15px 17px;
+
+    background: #fffbeb;
+
+    border: 1px solid #fde68a;
+
+    border-radius: 7px;
+
+    color: #92400e;
+
+    font-size: 12px;
+}
+
+.warning-box strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   32. DANGER BOX
+   ========================================================= */
+
+.danger-box {
+    margin: 0 24px 24px;
+
+    padding: 15px 17px;
+
+    background: #fef2f2;
+
+    border: 1px solid #fecaca;
+
+    border-radius: 7px;
+
+    color: #991b1b;
+
+    font-size: 12px;
+}
+
+.danger-box strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   33. PREVIEW TABLE
+   ========================================================= */
+
+.preview-table {
+    margin: 0 24px 24px;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 7px;
+
+    overflow: hidden;
+}
+
+.preview-table .table-container {
+    overflow-x: auto;
+}
+
+
+/* =========================================================
+   34. FILE DROP ACTIVE STATE
+   ========================================================= */
+
+.upload-area.dragover {
+    border-color: #2563eb;
+
+    background: #eff6ff;
+}
+
+
+/* =========================================================
+   35. HIDDEN ELEMENT
+   ========================================================= */
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================================================
+   36. TEXT UTILITIES
+   ========================================================= */
+
+.text-muted {
+    color: #6b7280;
+}
+
+.text-success {
+    color: #16a34a;
+}
+
+.text-danger {
+    color: #dc2626;
+}
+
+.text-warning {
+    color: #d97706;
+}
+
+.text-primary {
+    color: #2563eb;
+}
+
+.text-center {
+    text-align: center;
+}
+
+
+/* =========================================================
+   37. MARGIN UTILITIES
+   ========================================================= */
+
+.mt-10 {
+    margin-top: 10px;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   38. TABLET RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .search-tips {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .file-info {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* =========================================================
+   39. MOBILE / TABLET
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+    /* Sidebar */
+
+    .sidebar {
+        width: 70px;
+    }
+
+    .sidebar-header {
+        padding: 0;
+
+        justify-content: center;
+    }
+
+    .brand-name {
+        display: none;
+    }
+
+    .sidebar-header .logo {
+        width: 38px;
+        height: 38px;
+    }
+
+    .menu-item {
+        justify-content: center;
+
+        padding: 12px 5px;
+    }
+
+    .menu-item span:last-child {
+        display: none;
+    }
+
+    .menu-icon {
+        font-size: 18px;
+    }
+
+    /* Main */
+
+    .main-content {
+        margin-left: 70px;
+
+        width: calc(100% - 70px);
+    }
+
+    /* Topbar */
+
+    .topbar {
+        padding: 15px 20px;
+    }
+
+    .topbar h1 {
+        font-size: 20px;
+    }
+
+    .user-info {
+        display: none;
+    }
+
+    /* Content */
+
+    .page-content {
+        padding: 20px;
+    }
+
+    /* Forms */
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Details */
+
+    .record-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Files */
+
+    .file-info {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =========================================================
+   40. SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 550px) {
+
+    /* Login */
+
+    .login-page {
+        padding: 20px 15px;
+    }
+
+    .login-card {
+        padding: 30px 24px;
+    }
+
+    .login-heading h1 {
+        font-size: 20px;
+    }
+
+    .login-logo {
+        width: 65px;
+        height: 65px;
+    }
+
+    /* Statistics */
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Topbar */
+
+    .topbar {
+        align-items: flex-start;
+
+        gap: 10px;
+    }
+
+    .topbar h1 {
+        font-size: 18px;
+    }
+
+    .page-subtitle {
+        font-size: 12px;
+    }
+
+    /* Page */
+
+    .page-content {
+        padding: 14px;
+    }
+
+    /* Panels */
+
+    .panel-header {
+        padding: 16px;
+
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    /* Forms */
+
+    .form-grid {
+        padding: 16px;
+
+        gap: 15px;
+    }
+
+    /* Search */
+
+    .search-actions {
+        padding: 0 16px 16px;
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .search-actions .btn {
+        width: 100%;
+    }
+
+    /* Repayment Search */
+
+    .repayment-search-form {
+        padding: 16px;
+
+        gap: 15px;
+    }
+
+    .repayment-search-actions {
+        padding-top: 16px;
+
+        gap: 8px;
+    }
+
+    /* Repayment information */
+
+    .recovery-info-grid {
+        padding: 16px;
+
+        gap: 10px;
+    }
+
+    /* Toolbar */
+
+    .records-toolbar {
+        padding: 15px;
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .search-box {
+        max-width: none;
+    }
+
+    /* Details */
+
+    .record-details-grid {
+        padding: 16px;
+    }
+
+    .record-actions {
+        padding: 0 16px 16px;
+
+        flex-direction: column;
+    }
+
+    .record-actions .btn {
+        width: 100%;
+    }
+
+    /* Upload */
+
+    .upload-area {
+        margin: 0 16px 16px;
+
+        padding: 25px 15px;
+    }
+
+    /* Excel Columns */
+
+    .column-list {
+        padding: 16px;
+    }
+
+    /* Settings */
+
+    .settings-list {
+        padding: 0 16px;
+    }
+
+    .setting-row {
+        align-items: flex-start;
+    }
+
+    /* Info Boxes */
+
+    .info-box,
+    .warning-box,
+    .danger-box {
+        margin-left: 16px;
+        margin-right: 16px;
+    }
+
+    /* Pagination */
+
+    .pagination {
+        padding: 15px;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+}
+
+/* =========================================================
+   41. GLOBAL NOTIFICATION SYSTEM
+   ========================================================= */
+
+.global-notification-container {
+    position: fixed;
+
+    top: 24px;
+    right: 24px;
+
+    width: 380px;
+    max-width: calc(100vw - 32px);
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    z-index: 99999;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   NOTIFICATION
+   ========================================================= */
+
+.global-notification {
+    width: 100%;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 15px 16px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-left: 4px solid #2563eb;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.12);
+
+    opacity: 0;
+
+    transform: translateX(30px);
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   NOTIFICATION VISIBLE
+   ========================================================= */
+
+.global-notification.notification-visible {
+    opacity: 1;
+
+    transform: translateX(0);
+}
+
+
+/* =========================================================
+   NOTIFICATION HIDDEN
+   ========================================================= */
+
+.global-notification.notification-hide {
+    opacity: 0;
+
+    transform: translateX(30px);
+}
+
+
+/* =========================================================
+   NOTIFICATION ICON
+   ========================================================= */
+
+.notification-icon {
+    width: 32px;
+    height: 32px;
+
+    min-width: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 16px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   NOTIFICATION CONTENT
+   ========================================================= */
+
+.notification-content {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+.notification-title {
+    color: #111827;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    line-height: 1.4;
+
+    margin-bottom: 3px;
+}
+
+
+.notification-message {
+    color: #6b7280;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+   ========================================================= */
+
+.notification-close {
+    width: 24px;
+    height: 24px;
+
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: #9ca3af;
+
+    font-size: 21px;
+
+    line-height: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    border-radius: 4px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.notification-close:hover {
+    background: #f3f4f6;
+
+    color: #374151;
+}
+
+
+/* =========================================================
+   SUCCESS NOTIFICATION
+   ========================================================= */
+
+.global-notification.success {
+    border-left-color: #16a34a;
+}
+
+
+.global-notification.success
+.notification-icon {
+    background: #dcfce7;
+
+    color: #16a34a;
+}
+
+
+/* =========================================================
+   ERROR NOTIFICATION
+   ========================================================= */
+
+.global-notification.error {
+    border-left-color: #dc2626;
+}
+
+
+.global-notification.error
+.notification-icon {
+    background: #fee2e2;
+
+    color: #dc2626;
+}
+
+
+/* =========================================================
+   WARNING NOTIFICATION
+   ========================================================= */
+
+.global-notification.warning {
+    border-left-color: #d97706;
+}
+
+
+.global-notification.warning
+.notification-icon {
+    background: #fef3c7;
+
+    color: #d97706;
+}
+
+
+/* =========================================================
+   INFO NOTIFICATION
+   ========================================================= */
+
+.global-notification.info {
+    border-left-color: #2563eb;
+}
+
+
+.global-notification.info
+.notification-icon {
+    background: #dbeafe;
+
+    color: #2563eb;
+}
+
+
+/* =========================================================
+   LOADING NOTIFICATION
+   ========================================================= */
+
+.global-notification.loading {
+    border-left-color: #2563eb;
+}
+
+
+.global-notification.loading
+.notification-icon {
+    background: #dbeafe;
+
+    color: #2563eb;
+
+    animation:
+        notificationSpin 1s linear infinite;
+}
+
+
+/* =========================================================
+   LOADING ANIMATION
+   ========================================================= */
+
+@keyframes notificationSpin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE NOTIFICATIONS
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .global-notification-container {
+
+        top: 15px;
+
+        left: 15px;
+        right: 15px;
+
+        width: auto;
+
+        max-width: none;
+    }
+
+}

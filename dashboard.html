@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | Finance Date Recovery Tool</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+
+            <div class="logo">
+                <img src="assets/logo.png" alt="Logo">
+            </div>
+
+            <div class="brand-name">
+                Finance Recovery
+            </div>
+
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <a href="dashboard.html" class="menu-item active">
+                <span class="menu-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="date-recovery.html" class="menu-item">
+                <span class="menu-icon">⌕</span>
+                <span>Date Recovery</span>
+            </a>
+
+            <a href="upload.html" class="menu-item">
+                <span class="menu-icon">↑</span>
+                <span>Upload Excel</span>
+            </a>
+
+            <a href="records.html" class="menu-item">
+                <span class="menu-icon">▤</span>
+                <span>Financial Records</span>
+            </a>
+
+            <a href="uploaded-files.html" class="menu-item">
+                <span class="menu-icon">□</span>
+                <span>Uploaded Files</span>
+            </a>
+
+            <a href="history.html" class="menu-item">
+                <span class="menu-icon">◷</span>
+                <span>Recovery History</span>
+            </a>
+
+            <a href="users.html" class="menu-item">
+                <span class="menu-icon">♙</span>
+                <span>Users</span>
+            </a>
+
+            <a href="settings.html" class="menu-item">
+                <span class="menu-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-footer">
+
+            <a href="index.html" class="menu-item logout-item">
+                <span class="menu-icon">⇥</span>
+                <span>Logout</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- Main Content -->
+
+    <main class="main-content">
+
+        <!-- Topbar -->
+
+        <header class="topbar">
+
+            <div>
+                <h1>Dashboard</h1>
+
+                <p class="page-subtitle">
+                    Financial records and recovery overview.
+                </p>
+            </div>
+
+            <div class="user-area">
+
+                <div class="user-avatar">
+                    A
+                </div>
+
+                <div class="user-info">
+                    <strong>Admin</strong>
+                    <span>Administrator</span>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- Dashboard -->
+
+        <section class="page-content">
+
+            <!-- Statistics -->
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        ▤
+                    </div>
+
+                    <div>
+                        <span>Total Records</span>
+                        <strong id="totalRecords">0</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        ↑
+                    </div>
+
+                    <div>
+                        <span>Uploaded Files</span>
+                        <strong id="uploadedFiles">0</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        <span>Recovered Records</span>
+                        <strong id="recoveredRecords">0</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        !
+                    </div>
+
+                    <div>
+                        <span>Pending / Flagged</span>
+                        <strong id="pendingRecords">0</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Recent Activity -->
+
+            <div class="dashboard-grid">
+
+                <!-- Recent Uploads -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h2>Recent Uploads</h2>
+
+                            <p>
+                                Latest Excel files uploaded.
+                            </p>
+                        </div>
+
+                        <a href="uploaded-files.html">
+                            View All
+                        </a>
+
+                    </div>
+
+                    <div class="table-container">
+
+                        <table class="data-table">
+
+                            <thead>
+
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Records</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="recentUploads">
+
+                                <tr>
+                                    <td colspan="4">
+                                        No uploaded files.
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Recent Searches -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h2>Recent Searches</h2>
+
+                            <p>
+                                Latest recovery searches.
+                            </p>
+                        </div>
+
+                        <a href="history.html">
+                            View All
+                        </a>
+
+                    </div>
+
+                    <div class="table-container">
+
+                        <table class="data-table">
+
+                            <thead>
+
+                                <tr>
+                                    <th>Search</th>
+                                    <th>User</th>
+                                    <th>Date</th>
+                                    <th>Result</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="recentSearches">
+
+                                <tr>
+                                    <td colspan="4">
+                                        No recent searches.
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Quick Actions -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>Quick Actions</h2>
+
+                        <p>
+                            Common system operations.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="quick-actions">
+
+                    <a href="upload.html" class="quick-button">
+                        ↑ Upload Excel
+                    </a>
+
+                    <a href="date-recovery.html" class="quick-button">
+                        ⌕ Search Records
+                    </a>
+
+                    <a href="records.html" class="quick-button">
+                        ▤ View Records
+                    </a>
+
+                    <a href="history.html" class="quick-button">
+                        ◷ Recovery History
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- System Status -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>System Status</h2>
+
+                        <p>
+                            Current application status.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="status-list">
+
+                    <div class="system-status-item">
+                        <span class="status-indicator online"></span>
+
+                        <div>
+                            <strong>Database</strong>
+                            <small id="databaseStatus">
+                                Checking...
+                            </small>
+                        </div>
+                    </div>
+
+
+                    <div class="system-status-item">
+                        <span class="status-indicator online"></span>
+
+                        <div>
+                            <strong>Node.js API</strong>
+                            <small id="apiStatus">
+                                Checking...
+                            </small>
+                        </div>
+                    </div>
+
+
+                    <div class="system-status-item">
+                        <span class="status-indicator online"></span>
+
+                        <div>
+                            <strong>Date Recovery</strong>
+                            <small>
+                                Available
+                            </small>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <footer class="footer">
+            © 2026 Finance Date Recovery Tool
+        </footer>
+
+    </main>
+
+</div>
+
+
+<script src="script.js"></script>
+<script src="dashboard.js"></script>
+
+</body>
+
+</html>
