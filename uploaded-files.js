@@ -1,19 +1,25 @@
 
+// ============================================================
+// FINANCE DATE RECOVERY TOOL
+// UPLOADED-FILES.JS
+// UPLOADED FILES MANAGEMENT
+// ============================================================
+
 "use strict";
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    // ============================================================
+    // ========================================================
     // CONFIGURATION
-    // ============================================================
+    // ========================================================
 
     const API_URL =
         "https://finance-date-recovery-backend.onrender.com/api/uploaded-files";
 
 
-    // ============================================================
+    // ========================================================
     // HTML ELEMENTS
-    // ============================================================
+    // ========================================================
 
     const uploadedFilesTable =
         document.getElementById("uploadedFilesTable");
@@ -25,9 +31,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector(".empty-state");
 
 
-    // ============================================================
+    // ========================================================
     // INITIALIZE
-    // ============================================================
+    // ========================================================
 
     initializeUploadedFiles();
 
@@ -39,14 +45,86 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         await loadUploadedFiles();
+
     }
 
 
-    // ============================================================
-    // GET JWT TOKEN
-    // ============================================================
+    // ========================================================
+    // GET AUTHENTICATION TOKEN
+    // ========================================================
+    //
+    // The login system stores the JWT as:
+    //
+    // financeRecovery_token
+    //
+    // We first use the shared authentication manager
+    // from script.js.
+    //
+    // ========================================================
 
     function getToken() {
+
+        // ----------------------------------------------------
+        // PRIMARY AUTHENTICATION SYSTEM
+        // ----------------------------------------------------
+
+        if (
+            window.FinanceRecovery &&
+            typeof window.FinanceRecovery.getAuthToken ===
+                "function"
+        ) {
+
+            const token =
+                window.FinanceRecovery.getAuthToken();
+
+            if (token) {
+
+                return token;
+
+            }
+
+        }
+
+
+        // ----------------------------------------------------
+        // LOCAL STORAGE
+        // ----------------------------------------------------
+
+        const localToken =
+            localStorage.getItem(
+                "financeRecovery_token"
+            );
+
+
+        if (localToken) {
+
+            return localToken;
+
+        }
+
+
+        // ----------------------------------------------------
+        // SESSION STORAGE
+        // ----------------------------------------------------
+
+        const sessionToken =
+            sessionStorage.getItem(
+                "financeRecovery_token"
+            );
+
+
+        if (sessionToken) {
+
+            return sessionToken;
+
+        }
+
+
+        // ----------------------------------------------------
+        // OLD TOKEN KEYS
+        // ----------------------------------------------------
+        // Compatibility fallback.
+        // ----------------------------------------------------
 
         const tokenKeys = [
             "token",
@@ -56,37 +134,72 @@ document.addEventListener("DOMContentLoaded", function () {
         ];
 
 
-        // Check localStorage
         for (const key of tokenKeys) {
 
             const token =
                 localStorage.getItem(key);
 
             if (token) {
+
                 return token;
+
             }
+
         }
 
 
-        // Check sessionStorage
         for (const key of tokenKeys) {
 
             const token =
                 sessionStorage.getItem(key);
 
             if (token) {
+
                 return token;
+
             }
+
         }
 
 
         return null;
+
     }
 
 
-    // ============================================================
+    // ========================================================
+    // REMOVE AUTHENTICATION TOKEN
+    // ========================================================
+
+    function removeToken() {
+
+        if (
+            window.FinanceRecovery &&
+            typeof window.FinanceRecovery.removeAuthToken ===
+                "function"
+        ) {
+
+            window.FinanceRecovery.removeAuthToken();
+
+            return;
+
+        }
+
+
+        localStorage.removeItem(
+            "financeRecovery_token"
+        );
+
+        sessionStorage.removeItem(
+            "financeRecovery_token"
+        );
+
+    }
+
+
+    // ========================================================
     // LOAD UPLOADED FILES
-    // ============================================================
+    // ========================================================
 
     async function loadUploadedFiles() {
 
@@ -95,18 +208,24 @@ document.addEventListener("DOMContentLoaded", function () {
             showLoading();
 
 
-            const token = getToken();
+            // ------------------------------------------------
+            // GET TOKEN
+            // ------------------------------------------------
+
+            const token =
+                getToken();
 
 
-            // ----------------------------------------------------
+            // ------------------------------------------------
             // CHECK AUTHENTICATION
-            // ----------------------------------------------------
+            // ------------------------------------------------
 
             if (!token) {
 
                 throw new Error(
                     "Authentication token not found. Please login again."
                 );
+
             }
 
 
@@ -115,32 +234,45 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            // ----------------------------------------------------
-            // CALL NODE.JS API
-            // ----------------------------------------------------
+            // ------------------------------------------------
+            // API REQUEST
+            // ------------------------------------------------
 
-            const response = await fetch(
-                API_URL,
-                {
-                    method: "GET",
+            const response =
+                await fetch(
+                    API_URL,
+                    {
+                        method: "GET",
 
-                    headers: {
-                        "Authorization":
-                            `Bearer ${token}`,
+                        headers: {
+                            "Authorization":
+                                `Bearer ${token}`,
 
-                        "Content-Type":
-                            "application/json"
+                            "Content-Type":
+                                "application/json"
+                        }
                     }
-                }
-            );
+                );
 
 
-            // ----------------------------------------------------
+            // ------------------------------------------------
             // READ RESPONSE
-            // ----------------------------------------------------
+            // ------------------------------------------------
 
-            const result =
-                await response.json();
+            let result;
+
+            try {
+
+                result =
+                    await response.json();
+
+            } catch (error) {
+
+                throw new Error(
+                    "The Uploaded Files API returned an invalid response."
+                );
+
+            }
 
 
             console.log(
@@ -149,21 +281,26 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            // ----------------------------------------------------
-            // TOKEN EXPIRED
-            // ----------------------------------------------------
+            // ------------------------------------------------
+            // TOKEN EXPIRED / INVALID
+            // ------------------------------------------------
 
-            if (response.status === 401) {
+            if (
+                response.status === 401
+            ) {
+
+                removeToken();
 
                 throw new Error(
                     "Your login session has expired. Please login again."
                 );
+
             }
 
 
-            // ----------------------------------------------------
+            // ------------------------------------------------
             // API ERROR
-            // ----------------------------------------------------
+            // ------------------------------------------------
 
             if (
                 !response.ok ||
@@ -174,12 +311,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     result.message ||
                     "Unable to load uploaded files."
                 );
+
             }
 
 
-            // ----------------------------------------------------
+            // ------------------------------------------------
             // GET DATA
-            // ----------------------------------------------------
+            // ------------------------------------------------
 
             const files =
                 Array.isArray(result.data)
@@ -193,11 +331,13 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            // ----------------------------------------------------
+            // ------------------------------------------------
             // DISPLAY DATA
-            // ----------------------------------------------------
+            // ------------------------------------------------
 
-            displayUploadedFiles(files);
+            displayUploadedFiles(
+                files
+            );
 
 
         } catch (error) {
@@ -212,13 +352,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 error.message ||
                 "Unable to connect to the Uploaded Files API."
             );
+
         }
+
     }
 
 
-    // ============================================================
+    // ========================================================
     // DISPLAY UPLOADED FILES
-    // ============================================================
+    // ========================================================
 
     function displayUploadedFiles(files) {
 
@@ -229,12 +371,13 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
             return;
+
         }
 
 
-        // --------------------------------------------------------
+        // ----------------------------------------------------
         // NO FILES
-        // --------------------------------------------------------
+        // ----------------------------------------------------
 
         if (
             !files ||
@@ -246,41 +389,45 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
             return;
+
         }
 
 
-        // --------------------------------------------------------
+        // ----------------------------------------------------
         // CLEAR OLD TABLE DATA
-        // --------------------------------------------------------
+        // ----------------------------------------------------
 
-        uploadedFilesBody.innerHTML = "";
+        uploadedFilesBody.innerHTML =
+            "";
 
 
-        // --------------------------------------------------------
+        // ----------------------------------------------------
         // SHOW TABLE
-        // --------------------------------------------------------
+        // ----------------------------------------------------
 
         if (uploadedFilesTable) {
 
             uploadedFilesTable.style.display =
                 "block";
+
         }
 
 
-        // --------------------------------------------------------
+        // ----------------------------------------------------
         // HIDE EMPTY STATE
-        // --------------------------------------------------------
+        // ----------------------------------------------------
 
         if (emptyState) {
 
             emptyState.style.display =
                 "none";
+
         }
 
 
-        // --------------------------------------------------------
+        // ----------------------------------------------------
         // CREATE TABLE ROWS
-        // --------------------------------------------------------
+        // ----------------------------------------------------
 
         files.forEach(function (file) {
 
@@ -288,9 +435,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.createElement("tr");
 
 
-            // ----------------------------------------------------
+            // =================================================
             // FILE NAME
-            // ----------------------------------------------------
+            // =================================================
 
             addCell(
                 row,
@@ -300,11 +447,9 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            // ----------------------------------------------------
+            // =================================================
             // LOGBOOK NAME
-            //
-            // Your current database does not have this field.
-            // ----------------------------------------------------
+            // =================================================
 
             addCell(
                 row,
@@ -314,11 +459,9 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            // ----------------------------------------------------
+            // =================================================
             // FINANCIAL YEAR
-            //
-            // Your current database does not have this field.
-            // ----------------------------------------------------
+            // =================================================
 
             addCell(
                 row,
@@ -328,11 +471,9 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            // ----------------------------------------------------
+            // =================================================
             // BRANCH
-            //
-            // Your current database does not have this field.
-            // ----------------------------------------------------
+            // =================================================
 
             addCell(
                 row,
@@ -341,9 +482,9 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            // ----------------------------------------------------
+            // =================================================
             // NUMBER OF RECORDS
-            // ----------------------------------------------------
+            // =================================================
 
             addCell(
                 row,
@@ -354,9 +495,9 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            // ----------------------------------------------------
+            // =================================================
             // UPLOADED BY
-            // ----------------------------------------------------
+            // =================================================
 
             addCell(
                 row,
@@ -367,9 +508,9 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            // ----------------------------------------------------
+            // =================================================
             // DATE UPLOADED
-            // ----------------------------------------------------
+            // =================================================
 
             addCell(
                 row,
@@ -381,9 +522,9 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            // ----------------------------------------------------
+            // =================================================
             // ACTION
-            // ----------------------------------------------------
+            // =================================================
 
             const actionCell =
                 document.createElement("td");
@@ -401,15 +542,46 @@ document.addEventListener("DOMContentLoaded", function () {
                 "btn btn-primary";
 
 
-            viewButton.textContent =
-                "View";
+            // -------------------------------------------------
+            // FONT AWESOME ICON
+            // -------------------------------------------------
 
+            const icon =
+                document.createElement("i");
+
+            icon.className =
+                "fa-solid fa-eye";
+
+
+            // -------------------------------------------------
+            // BUTTON TEXT
+            // -------------------------------------------------
+
+            const text =
+                document.createTextNode(
+                    " View"
+                );
+
+
+            viewButton.appendChild(
+                icon
+            );
+
+            viewButton.appendChild(
+                text
+            );
+
+
+            // -------------------------------------------------
+            // VIEW EVENT
+            // -------------------------------------------------
 
             viewButton.addEventListener(
                 "click",
                 function () {
 
                     viewFile(file);
+
                 }
             );
 
@@ -424,21 +596,22 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            // ----------------------------------------------------
-            // ADD ROW TO TABLE
-            // ----------------------------------------------------
+            // -------------------------------------------------
+            // ADD ROW
+            // -------------------------------------------------
 
             uploadedFilesBody.appendChild(
                 row
             );
 
         });
+
     }
 
 
-    // ============================================================
+    // ========================================================
     // ADD TABLE CELL
-    // ============================================================
+    // ========================================================
 
     function addCell(row, value) {
 
@@ -459,21 +632,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
             cell.textContent =
                 String(value);
+
         }
 
 
-        row.appendChild(cell);
+        row.appendChild(
+            cell
+        );
+
     }
 
 
-    // ============================================================
+    // ========================================================
     // FORMAT DATE AND TIME
-    // ============================================================
+    // ========================================================
 
     function formatDateTime(value) {
 
         if (!value) {
+
             return "—";
+
         }
 
 
@@ -488,6 +667,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
 
             return String(value);
+
         }
 
 
@@ -501,12 +681,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 minute: "2-digit"
             }
         );
+
     }
 
 
-    // ============================================================
+    // ========================================================
     // VIEW FILE
-    // ============================================================
+    // ========================================================
 
     function viewFile(file) {
 
@@ -520,6 +701,10 @@ document.addEventListener("DOMContentLoaded", function () {
             file.id;
 
 
+        // ----------------------------------------------------
+        // CHECK FILE ID
+        // ----------------------------------------------------
+
         if (!fileId) {
 
             alert(
@@ -527,15 +712,13 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
             return;
+
         }
 
 
-        /*
-         * At this stage we display the file information.
-         *
-         * A dedicated backend endpoint can later be added
-         * for viewing the records belonging to this file.
-         */
+        // ----------------------------------------------------
+        // FILE INFORMATION
+        // ----------------------------------------------------
 
         const fileName =
             file.file_name ||
@@ -550,6 +733,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 : 0;
 
 
+        // ----------------------------------------------------
+        // CURRENT VIEW
+        // ----------------------------------------------------
+        // At this stage, the backend does not yet provide a
+        // dedicated endpoint for viewing all records belonging
+        // to the selected uploaded file.
+        //
+        // Therefore we show the available file information.
+        //
+        // ----------------------------------------------------
+
         alert(
             "File: " +
             fileName +
@@ -558,12 +752,13 @@ document.addEventListener("DOMContentLoaded", function () {
             "\nFile ID: " +
             fileId
         );
+
     }
 
 
-    // ============================================================
+    // ========================================================
     // SHOW EMPTY / ERROR STATE
-    // ============================================================
+    // ========================================================
 
     function showEmptyState(message) {
 
@@ -571,6 +766,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             uploadedFilesTable.style.display =
                 "none";
+
         }
 
 
@@ -578,6 +774,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             uploadedFilesBody.innerHTML =
                 "";
+
         }
 
 
@@ -588,17 +785,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             const heading =
-                emptyState.querySelector("h3");
+                emptyState.querySelector(
+                    "h3"
+                );
 
 
             const paragraph =
-                emptyState.querySelector("p");
+                emptyState.querySelector(
+                    "p"
+                );
 
 
             if (heading) {
 
                 heading.textContent =
                     "Uploaded Files";
+
             }
 
 
@@ -606,14 +808,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 paragraph.textContent =
                     message;
+
             }
+
         }
+
     }
 
 
-    // ============================================================
+    // ========================================================
     // SHOW LOADING
-    // ============================================================
+    // ========================================================
 
     function showLoading() {
 
@@ -621,6 +826,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             uploadedFilesTable.style.display =
                 "none";
+
         }
 
 
@@ -631,17 +837,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             const heading =
-                emptyState.querySelector("h3");
+                emptyState.querySelector(
+                    "h3"
+                );
 
 
             const paragraph =
-                emptyState.querySelector("p");
+                emptyState.querySelector(
+                    "p"
+                );
 
 
             if (heading) {
 
                 heading.textContent =
                     "Loading Uploaded Files...";
+
             }
 
 
@@ -649,22 +860,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 paragraph.textContent =
                     "Connecting to the Uploaded Files API...";
+
             }
+
         }
+
     }
 
 
-    // ============================================================
+    // ========================================================
     // PUBLIC FUNCTIONS
-    // ============================================================
+    // ========================================================
 
     window.uploadedFilesManager = {
 
-        load: loadUploadedFiles,
+        load:
+            loadUploadedFiles,
 
-        refresh: loadUploadedFiles
+        refresh:
+            loadUploadedFiles
 
     };
 
 });
-
