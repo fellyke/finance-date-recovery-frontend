@@ -1,7 +1,10 @@
+
 // ============================================================
 // FINANCE DATE RECOVERY TOOL
 // UPLOAD.JS
 // ============================================================
+
+"use strict";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -9,40 +12,59 @@ document.addEventListener("DOMContentLoaded", () => {
     // API CONFIGURATION
     // ========================================================
 
-    const API_URL = "https://finance-date-recovery-backend.onrender.com/api/upload";
+    const API_URL =
+        "https://finance-date-recovery-backend.onrender.com/api/upload";
+
+    // Storage key used by script.js
+    const TOKEN_KEY = "financeRecovery_token";
+    const USER_KEY = "financeRecovery_user";
 
 
     // ========================================================
     // GET HTML ELEMENTS
     // ========================================================
 
-    const uploadForm = document.getElementById("uploadForm");
+    const uploadForm =
+        document.getElementById("uploadForm");
 
-    const excelFile = document.getElementById("excelFile");
+    const excelFile =
+        document.getElementById("excelFile");
 
-    const selectedFile = document.getElementById("selectedFile");
+    const selectedFile =
+        document.getElementById("selectedFile");
 
-    const uploadType = document.getElementById("uploadType");
+    const uploadType =
+        document.getElementById("uploadType");
 
-    const logbookName = document.getElementById("logbookName");
+    const logbookName =
+        document.getElementById("logbookName");
 
-    const financialYear = document.getElementById("financialYear");
+    const financialYear =
+        document.getElementById("financialYear");
 
-    const branch = document.getElementById("branch");
+    const branch =
+        document.getElementById("branch");
 
-    const description = document.getElementById("description");
+    const description =
+        document.getElementById("description");
 
-    const requiredColumns = document.getElementById("requiredColumns");
+    const requiredColumns =
+        document.getElementById("requiredColumns");
 
     const requiredColumnsDescription =
-        document.getElementById("requiredColumnsDescription");
+        document.getElementById(
+            "requiredColumnsDescription"
+        );
 
     const uploadPreview =
         document.getElementById("uploadPreview");
 
-    const uploadButton = uploadForm
-        ? uploadForm.querySelector('button[type="submit"]')
-        : null;
+    const uploadButton =
+        uploadForm
+            ? uploadForm.querySelector(
+                'button[type="submit"]'
+            )
+            : null;
 
 
     // ========================================================
@@ -50,23 +72,29 @@ document.addEventListener("DOMContentLoaded", () => {
     // ========================================================
 
     if (!uploadForm) {
-        console.error("ERROR: uploadForm was not found.");
+        console.error(
+            "ERROR: uploadForm was not found."
+        );
         return;
     }
 
     if (!excelFile) {
-        console.error("ERROR: excelFile input was not found.");
+        console.error(
+            "ERROR: excelFile input was not found."
+        );
         return;
     }
 
     if (!uploadType) {
-        console.error("ERROR: uploadType was not found.");
+        console.error(
+            "ERROR: uploadType was not found."
+        );
         return;
     }
 
 
     // ========================================================
-    // REQUIRED COLUMNS
+    // REQUIRED EXCEL COLUMNS
     // ========================================================
 
     const financialRecordColumns = [
@@ -98,86 +126,185 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // ========================================================
+    // AUTHENTICATION
+    // ========================================================
+
+    function getAuthToken() {
+
+        const token =
+            localStorage.getItem(TOKEN_KEY);
+
+        if (!token) {
+            console.warn(
+                "No authentication token found."
+            );
+        }
+
+        return token;
+    }
+
+
+    // ========================================================
+    // CHECK LOGIN
+    // ========================================================
+
+    function isLoggedIn() {
+
+        const token =
+            getAuthToken();
+
+        const user =
+            localStorage.getItem(USER_KEY);
+
+        return !!token && !!user;
+    }
+
+
+    // ========================================================
+    // REDIRECT TO LOGIN
+    // ========================================================
+
+    function redirectToLogin() {
+
+        showMessage(
+            "Your login session has expired. Please login again.",
+            "error"
+        );
+
+        setTimeout(() => {
+
+            window.location.href =
+                "index.html";
+
+        }, 1500);
+    }
+
+
+    // ========================================================
+    // GET AUTHORIZATION HEADERS
+    // ========================================================
+
+    function getAuthHeaders() {
+
+        const headers = {};
+
+        const token =
+            getAuthToken();
+
+        if (token) {
+
+            headers.Authorization =
+                `Bearer ${token}`;
+
+        }
+
+        return headers;
+    }
+
+
+    // ========================================================
     // UPLOAD TYPE CHANGE
     // ========================================================
 
-    uploadType.addEventListener("change", function () {
+    uploadType.addEventListener(
+        "change",
+        function () {
 
-        const type = uploadType.value;
+            const type =
+                uploadType.value;
 
 
-        // ----------------------------------------------------
-        // NO TYPE SELECTED
-        // ----------------------------------------------------
+            // ------------------------------------------------
+            // NO TYPE SELECTED
+            // ------------------------------------------------
 
-        if (!type) {
+            if (!type) {
 
-            requiredColumns.innerHTML = `
-                <span>
-                    Select upload type
-                </span>
-            `;
+                requiredColumns.innerHTML = `
+                    <span>
+                        Select upload type
+                    </span>
+                `;
 
-            requiredColumnsDescription.textContent =
-                "Select an upload type to see the required Excel columns.";
+                requiredColumnsDescription.textContent =
+                    "Select an upload type to see the required Excel columns.";
 
-            return;
+                return;
+            }
+
+
+            // ------------------------------------------------
+            // FINANCIAL RECORDS
+            // ------------------------------------------------
+
+            if (
+                type === "financial_records"
+            ) {
+
+                requiredColumnsDescription.textContent =
+                    "Your financial records Excel file should contain the following columns.";
+
+                displayRequiredColumns(
+                    financialRecordColumns
+                );
+
+                return;
+            }
+
+
+            // ------------------------------------------------
+            // REPAYMENTS
+            // ------------------------------------------------
+
+            if (
+                type === "repayments"
+            ) {
+
+                requiredColumnsDescription.textContent =
+                    "Your repayment Excel file should contain the following columns.";
+
+                displayRequiredColumns(
+                    repaymentColumns
+                );
+
+                return;
+            }
+
         }
-
-
-        // ----------------------------------------------------
-        // FINANCIAL RECORDS
-        // ----------------------------------------------------
-
-        if (type === "financial_records") {
-
-            requiredColumnsDescription.textContent =
-                "Your financial records Excel file should contain the following columns.";
-
-            displayRequiredColumns(
-                financialRecordColumns
-            );
-
-            return;
-        }
-
-
-        // ----------------------------------------------------
-        // REPAYMENTS
-        // ----------------------------------------------------
-
-        if (type === "repayments") {
-
-            requiredColumnsDescription.textContent =
-                "Your repayment Excel file should contain the following columns.";
-
-            displayRequiredColumns(
-                repaymentColumns
-            );
-
-            return;
-        }
-
-    });
+    );
 
 
     // ========================================================
     // DISPLAY REQUIRED COLUMNS
     // ========================================================
 
-    function displayRequiredColumns(columns) {
+    function displayRequiredColumns(
+        columns
+    ) {
+
+        if (!requiredColumns) {
+            return;
+        }
 
         requiredColumns.innerHTML = "";
 
-        columns.forEach(column => {
+        columns.forEach(
+            column => {
 
-            const span = document.createElement("span");
+                const span =
+                    document.createElement(
+                        "span"
+                    );
 
-            span.textContent = column;
+                span.textContent =
+                    column;
 
-            requiredColumns.appendChild(span);
+                requiredColumns.appendChild(
+                    span
+                );
 
-        });
+            }
+        );
 
     }
 
@@ -186,428 +313,667 @@ document.addEventListener("DOMContentLoaded", () => {
     // FILE SELECTION
     // ========================================================
 
-    excelFile.addEventListener("change", () => {
+    excelFile.addEventListener(
+        "change",
+        () => {
 
-        const file = excelFile.files[0];
+            const file =
+                excelFile.files[0];
 
 
-        if (!file) {
+            if (!file) {
+
+                selectedFile.textContent =
+                    "No file selected";
+
+                return;
+            }
+
+
+            if (
+                !isValidFile(file)
+            ) {
+
+                excelFile.value = "";
+
+                selectedFile.textContent =
+                    "No file selected";
+
+                return;
+            }
+
 
             selectedFile.textContent =
-                "No file selected";
+                `${file.name} (${formatFileSize(file.size)})`;
 
-            return;
+
+            // Show preview
+            showFilePreview(file);
+
         }
-
-
-        if (!isValidFile(file)) {
-
-            excelFile.value = "";
-
-            selectedFile.textContent =
-                "No file selected";
-
-            return;
-        }
-
-
-        selectedFile.textContent =
-            `${file.name} (${formatFileSize(file.size)})`;
-
-
-        // Show preview information
-        showFilePreview(file);
-
-    });
+    );
 
 
     // ========================================================
     // FORM SUBMIT
     // ========================================================
 
-    uploadForm.addEventListener("submit", async (event) => {
+    uploadForm.addEventListener(
+        "submit",
+        async (event) => {
 
-        event.preventDefault();
+            event.preventDefault();
 
 
-        // ----------------------------------------------------
-        // VALIDATE UPLOAD TYPE
-        // ----------------------------------------------------
+            // ------------------------------------------------
+            // CHECK LOGIN
+            // ------------------------------------------------
 
-        if (!uploadType.value) {
+            if (!isLoggedIn()) {
 
-            showMessage(
-                "Please select what type of records you are uploading.",
-                "error"
-            );
-
-            uploadType.focus();
-
-            return;
-        }
-
-
-        // ----------------------------------------------------
-        // GET FILE
-        // ----------------------------------------------------
-
-        const file = excelFile.files[0];
-
-
-        if (!file) {
-
-            showMessage(
-                "Please select an Excel or CSV file.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        // ----------------------------------------------------
-        // VALIDATE FILE
-        // ----------------------------------------------------
-
-        if (!isValidFile(file)) {
-            return;
-        }
-
-
-        // ----------------------------------------------------
-        // VALIDATE LOGBOOK NAME
-        // ----------------------------------------------------
-
-        if (!logbookName.value.trim()) {
-
-            showMessage(
-                "Please enter the logbook name.",
-                "error"
-            );
-
-            logbookName.focus();
-
-            return;
-        }
-
-
-        // ----------------------------------------------------
-        // VALIDATE FINANCIAL YEAR
-        // ----------------------------------------------------
-
-        if (!financialYear.value.trim()) {
-
-            showMessage(
-                "Please enter the financial year.",
-                "error"
-            );
-
-            financialYear.focus();
-
-            return;
-        }
-
-
-        // ====================================================
-        // CREATE FORM DATA
-        // ====================================================
-
-        const formData = new FormData();
-
-
-        // IMPORTANT:
-        // This must match multer upload.single("excelFile")
-        formData.append(
-            "excelFile",
-            file
-        );
-
-
-        // ----------------------------------------------------
-        // UPLOAD TYPE
-        // ----------------------------------------------------
-
-        formData.append(
-            "uploadType",
-            uploadType.value
-        );
-
-
-        // ----------------------------------------------------
-        // LOGBOOK INFORMATION
-        // ----------------------------------------------------
-
-        formData.append(
-            "logbookName",
-            logbookName.value.trim()
-        );
-
-
-        formData.append(
-            "financialYear",
-            financialYear.value.trim()
-        );
-
-
-        formData.append(
-            "branch",
-            branch.value.trim()
-        );
-
-
-        formData.append(
-            "description",
-            description.value.trim()
-        );
-
-
-        // ====================================================
-        // START UPLOAD
-        // ====================================================
-
-        try {
-
-            setLoading(true);
-
-
-            showMessage(
-                `Uploading ${
-                    uploadType.value === "repayments"
-                        ? "repayment"
-                        : "financial"
-                } records...`,
-                "loading"
-            );
-
-
-            console.log("-----------------------------------------");
-            console.log("STARTING UPLOAD");
-            console.log("-----------------------------------------");
-
-            console.log(
-                "File:",
-                file.name
-            );
-
-            console.log(
-                "Upload type:",
-                uploadType.value
-            );
-
-            console.log(
-                "API:",
-                API_URL
-            );
-
-
-            // =================================================
-            // SEND REQUEST TO NODE.JS
-            // =================================================
-
-            const response = await fetch(
-                API_URL,
-                {
-                    method: "POST",
-                    body: formData
-                }
-            );
-
-
-            // =================================================
-            // READ RESPONSE
-            // =================================================
-
-            let result;
-
-
-            try {
-
-                result = await response.json();
-
-            } catch (jsonError) {
-
-                throw new Error(
-                    "The server returned an invalid response."
+                showMessage(
+                    "You are not logged in. Please login first.",
+                    "error"
                 );
 
+                setTimeout(() => {
+
+                    window.location.href =
+                        "index.html";
+
+                }, 1200);
+
+                return;
             }
 
 
-            console.log(
-                "Server response:",
-                result
-            );
+            // ------------------------------------------------
+            // VALIDATE UPLOAD TYPE
+            // ------------------------------------------------
 
+            if (!uploadType.value) {
 
-            // =================================================
-            // CHECK API RESPONSE
-            // =================================================
-
-            if (!response.ok || !result.success) {
-
-                throw new Error(
-                    result.message ||
-                    "The file could not be uploaded."
+                showMessage(
+                    "Please select what type of records you are uploading.",
+                    "error"
                 );
 
+                uploadType.focus();
+
+                return;
             }
 
 
-            // =================================================
-            // SUCCESS
-            // =================================================
+            // ------------------------------------------------
+            // GET FILE
+            // ------------------------------------------------
 
-            showMessage(
-                result.message ||
-                "Excel file uploaded successfully.",
-                "success"
-            );
+            const file =
+                excelFile.files[0];
 
 
-            // =================================================
-            // SHOW UPLOAD RESULT
-            // =================================================
+            if (!file) {
 
-            showUploadResult(
-                result.data || {}
-            );
+                showMessage(
+                    "Please select an Excel or CSV file.",
+                    "error"
+                );
 
-
-            // =================================================
-            // LOG SUCCESS
-            // =================================================
-
-            console.log("-----------------------------------------");
-            console.log("UPLOAD SUCCESSFUL");
-            console.log("-----------------------------------------");
-
-            console.log(result);
+                return;
+            }
 
 
-        } catch (error) {
-
-            console.error(
-                "UPLOAD ERROR:",
-                error
-            );
-
-
-            // =================================================
-            // CONNECTION ERROR
-            // =================================================
+            // ------------------------------------------------
+            // VALIDATE FILE
+            // ------------------------------------------------
 
             if (
-                error instanceof TypeError &&
-                error.message.includes("fetch")
+                !isValidFile(file)
+            ) {
+
+                return;
+            }
+
+
+            // ------------------------------------------------
+            // VALIDATE LOGBOOK NAME
+            // ------------------------------------------------
+
+            if (
+                !logbookName ||
+                !logbookName.value.trim()
             ) {
 
                 showMessage(
-                    "Cannot connect to the Node.js server. Make sure your backend is running.",
+                    "Please enter the logbook name.",
                     "error"
                 );
 
-            } else {
+                if (logbookName) {
+                    logbookName.focus();
+                }
+
+                return;
+            }
+
+
+            // ------------------------------------------------
+            // VALIDATE FINANCIAL YEAR
+            // ------------------------------------------------
+
+            if (
+                !financialYear ||
+                !financialYear.value.trim()
+            ) {
 
                 showMessage(
-                    error.message ||
-                    "Unable to upload the file.",
+                    "Please enter the financial year.",
                     "error"
+                );
+
+                if (financialYear) {
+                    financialYear.focus();
+                }
+
+                return;
+            }
+
+
+            // =================================================
+            // GET TOKEN
+            // =================================================
+
+            const token =
+                getAuthToken();
+
+
+            if (!token) {
+
+                redirectToLogin();
+
+                return;
+            }
+
+
+            // =================================================
+            // CREATE FORM DATA
+            // =================================================
+
+            const formData =
+                new FormData();
+
+
+            // IMPORTANT:
+            // This MUST match:
+            //
+            // upload.single("excelFile")
+            //
+            // in your Node.js backend.
+
+            formData.append(
+                "excelFile",
+                file
+            );
+
+
+            // -------------------------------------------------
+            // UPLOAD TYPE
+            // -------------------------------------------------
+
+            formData.append(
+                "uploadType",
+                uploadType.value
+            );
+
+
+            // -------------------------------------------------
+            // LOGBOOK NAME
+            // -------------------------------------------------
+
+            formData.append(
+                "logbookName",
+                logbookName.value.trim()
+            );
+
+
+            // -------------------------------------------------
+            // FINANCIAL YEAR
+            // -------------------------------------------------
+
+            formData.append(
+                "financialYear",
+                financialYear.value.trim()
+            );
+
+
+            // -------------------------------------------------
+            // BRANCH
+            // -------------------------------------------------
+
+            if (branch) {
+
+                formData.append(
+                    "branch",
+                    branch.value.trim()
                 );
 
             }
 
 
-        } finally {
+            // -------------------------------------------------
+            // DESCRIPTION
+            // -------------------------------------------------
 
-            setLoading(false);
+            if (description) {
+
+                formData.append(
+                    "description",
+                    description.value.trim()
+                );
+
+            }
+
+
+            // =================================================
+            // START UPLOAD
+            // =================================================
+
+            try {
+
+                setLoading(true);
+
+
+                showMessage(
+                    `Uploading ${
+                        uploadType.value === "repayments"
+                            ? "repayment"
+                            : "financial"
+                    } records...`,
+                    "loading"
+                );
+
+
+                console.log(
+                    "-----------------------------------------"
+                );
+
+                console.log(
+                    "STARTING UPLOAD"
+                );
+
+                console.log(
+                    "-----------------------------------------"
+                );
+
+
+                console.log(
+                    "File:",
+                    file.name
+                );
+
+                console.log(
+                    "Upload type:",
+                    uploadType.value
+                );
+
+                console.log(
+                    "API:",
+                    API_URL
+                );
+
+                console.log(
+                    "Authentication token:",
+                    token
+                        ? "Token found"
+                        : "NO TOKEN"
+                );
+
+
+                // =================================================
+                // SEND REQUEST
+                // =================================================
+                //
+                // IMPORTANT:
+                //
+                // We DO NOT set Content-Type manually.
+                //
+                // The browser automatically creates:
+                //
+                // multipart/form-data; boundary=...
+                //
+                // =================================================
+
+                const response =
+                    await fetch(
+                        API_URL,
+                        {
+                            method: "POST",
+
+                            headers:
+                                getAuthHeaders(),
+
+                            body:
+                                formData
+                        }
+                    );
+
+
+                // =================================================
+                // READ RESPONSE
+                // =================================================
+
+                let result;
+
+
+                const contentType =
+                    response.headers.get(
+                        "content-type"
+                    ) || "";
+
+
+                if (
+                    contentType.includes(
+                        "application/json"
+                    )
+                ) {
+
+                    result =
+                        await response.json();
+
+                } else {
+
+                    const text =
+                        await response.text();
+
+                    result = {
+                        success: false,
+                        message:
+                            text ||
+                            "The server returned an invalid response."
+                    };
+
+                }
+
+
+                console.log(
+                    "Server response:",
+                    result
+                );
+
+
+                // =================================================
+                // TOKEN / AUTHORIZATION ERROR
+                // =================================================
+
+                if (
+                    response.status === 401 ||
+                    response.status === 403
+                ) {
+
+                    console.error(
+                        "Authentication failed:",
+                        result
+                    );
+
+
+                    // Remove expired credentials
+                    localStorage.removeItem(
+                        TOKEN_KEY
+                    );
+
+                    localStorage.removeItem(
+                        USER_KEY
+                    );
+
+
+                    showMessage(
+                        result.message ||
+                        "Your login session has expired. Please login again.",
+                        "error"
+                    );
+
+
+                    setTimeout(() => {
+
+                        window.location.href =
+                            "index.html";
+
+                    }, 1500);
+
+
+                    return;
+                }
+
+
+                // =================================================
+                // API ERROR
+                // =================================================
+
+                if (
+                    !response.ok ||
+                    !result.success
+                ) {
+
+                    throw new Error(
+                        result.message ||
+                        result.error ||
+                        "The file could not be uploaded."
+                    );
+
+                }
+
+
+                // =================================================
+                // SUCCESS
+                // =================================================
+
+                showMessage(
+                    result.message ||
+                    "Excel file uploaded successfully.",
+                    "success"
+                );
+
+
+                // =================================================
+                // SHOW UPLOAD RESULT
+                // =================================================
+
+                showUploadResult(
+                    result.data || {}
+                );
+
+
+                // =================================================
+                // STORE FILE ID
+                // =================================================
+
+                if (
+                    result.data &&
+                    result.data.fileId
+                ) {
+
+                    try {
+
+                        localStorage.setItem(
+                            "financeRecovery_lastFileId",
+                            String(
+                                result.data.fileId
+                            )
+                        );
+
+                    } catch (storageError) {
+
+                        console.warn(
+                            "Could not save last file ID.",
+                            storageError
+                        );
+
+                    }
+
+                }
+
+
+                console.log(
+                    "-----------------------------------------"
+                );
+
+                console.log(
+                    "UPLOAD SUCCESSFUL"
+                );
+
+                console.log(
+                    "-----------------------------------------"
+                );
+
+
+                console.log(
+                    result
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "UPLOAD ERROR:",
+                    error
+                );
+
+
+                // =================================================
+                // NETWORK ERROR
+                // =================================================
+
+                if (
+                    error instanceof TypeError
+                ) {
+
+                    showMessage(
+                        "Unable to connect to the Node.js server. Please check your internet connection and backend server.",
+                        "error"
+                    );
+
+                } else {
+
+                    showMessage(
+                        error.message ||
+                        "Unable to upload the file.",
+                        "error"
+                    );
+
+                }
+
+            } finally {
+
+                setLoading(false);
+
+            }
 
         }
-
-    });
+    );
 
 
     // ========================================================
     // FORM RESET
     // ========================================================
 
-    uploadForm.addEventListener("reset", () => {
+    uploadForm.addEventListener(
+        "reset",
+        () => {
 
-        setTimeout(() => {
+            setTimeout(
+                () => {
 
-            selectedFile.textContent =
-                "No file selected";
+                    if (selectedFile) {
 
+                        selectedFile.textContent =
+                            "No file selected";
 
-            // Reset upload type
-            uploadType.value = "";
-
-
-            // Reset required columns
-            requiredColumns.innerHTML = `
-                <span>
-                    Select upload type
-                </span>
-            `;
+                    }
 
 
-            requiredColumnsDescription.textContent =
-                "Select an upload type to see the required Excel columns.";
+                    // Reset upload type
+                    uploadType.value =
+                        "";
 
 
-            // Reset preview
-            if (uploadPreview) {
+                    // Reset required columns
+                    if (
+                        requiredColumns
+                    ) {
 
-                uploadPreview.innerHTML = `
+                        requiredColumns.innerHTML = `
+                            <span>
+                                Select upload type
+                            </span>
+                        `;
 
-                    <div class="empty-state-icon">
-                        □
-                    </div>
-
-                    <h3>
-                        No File Uploaded
-                    </h3>
-
-                    <p>
-                        Select an Excel file to preview its records.
-                    </p>
-
-                `;
-
-            }
+                    }
 
 
-            // Hide message
-            const message =
-                document.getElementById(
-                    "uploadMessage"
-                );
+                    if (
+                        requiredColumnsDescription
+                    ) {
+
+                        requiredColumnsDescription.textContent =
+                            "Select an upload type to see the required Excel columns.";
+
+                    }
 
 
-            if (message) {
+                    // Reset preview
+                    if (uploadPreview) {
 
-                message.style.display =
-                    "none";
+                        uploadPreview.innerHTML = `
+                            <div class="empty-state-icon">
+                                □
+                            </div>
 
-            }
+                            <h3>
+                                No File Uploaded
+                            </h3>
+
+                            <p>
+                                Select an Excel file to preview its records.
+                            </p>
+                        `;
+
+                    }
 
 
-            // Hide result
-            const result =
-                document.getElementById(
-                    "uploadResult"
-                );
+                    // Hide message
+                    const message =
+                        document.getElementById(
+                            "uploadMessage"
+                        );
 
 
-            if (result) {
+                    if (message) {
 
-                result.style.display =
-                    "none";
+                        message.style.display =
+                            "none";
 
-            }
+                    }
 
-        }, 0);
 
-    });
+                    // Hide result
+                    const result =
+                        document.getElementById(
+                            "uploadResult"
+                        );
+
+
+                    if (result) {
+
+                        result.style.display =
+                            "none";
+
+                    }
+
+                },
+                0
+            );
+
+        }
+    );
 
 
     // ========================================================
@@ -638,7 +1004,11 @@ document.addEventListener("DOMContentLoaded", () => {
         // CHECK EXTENSION
         // ----------------------------------------------------
 
-        if (!allowedExtensions.includes(extension)) {
+        if (
+            !allowedExtensions.includes(
+                extension
+            )
+        ) {
 
             showMessage(
                 "Only .xlsx, .xls and .csv files are allowed.",
@@ -646,7 +1016,6 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             return false;
-
         }
 
 
@@ -658,7 +1027,9 @@ document.addEventListener("DOMContentLoaded", () => {
             10 * 1024 * 1024;
 
 
-        if (file.size > maxSize) {
+        if (
+            file.size > maxSize
+        ) {
 
             showMessage(
                 "The file cannot be larger than 10 MB.",
@@ -666,7 +1037,6 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             return false;
-
         }
 
 
@@ -716,7 +1086,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             <p>
                 <strong>Size:</strong>
-                ${escapeHTML(formatFileSize(file.size))}
+                ${escapeHTML(
+                    formatFileSize(file.size)
+                )}
             </p>
 
             <p>
@@ -732,7 +1104,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // SHOW MESSAGE
     // ========================================================
 
-    function showMessage(message, type) {
+    function showMessage(
+        message,
+        type = "info"
+    ) {
 
         let messageBox =
             document.getElementById(
@@ -747,13 +1122,16 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!messageBox) {
 
             messageBox =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             messageBox.id =
                 "uploadMessage";
 
             messageBox.className =
                 "upload-message";
+
 
             uploadForm.prepend(
                 messageBox
@@ -784,7 +1162,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // SHOW UPLOAD RESULT
     // ========================================================
 
-    function showUploadResult(data) {
+    function showUploadResult(
+        data
+    ) {
 
         let result =
             document.getElementById(
@@ -799,7 +1179,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!result) {
 
             result =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             result.id =
                 "uploadResult";
@@ -820,7 +1202,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // ----------------------------------------------------
 
         const fileName =
-            data.fileName || "-";
+            data.fileName ||
+            "-";
 
 
         const records =
@@ -830,7 +1213,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         const fileId =
-            data.fileId || "-";
+            data.fileId ||
+            "-";
 
 
         const type =
@@ -890,7 +1274,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // BUTTON LOADING STATE
     // ========================================================
 
-    function setLoading(loading) {
+    function setLoading(
+        loading
+    ) {
 
         if (!uploadButton) {
             return;
@@ -936,10 +1322,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // FORMAT FILE SIZE
     // ========================================================
 
-    function formatFileSize(bytes) {
+    function formatFileSize(
+        bytes
+    ) {
 
-        if (bytes === 0) {
+        if (
+            bytes === 0
+        ) {
+
             return "0 Bytes";
+
         }
 
 
@@ -979,7 +1371,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // ESCAPE HTML
     // ========================================================
 
-    function escapeHTML(value) {
+    function escapeHTML(
+        value
+    ) {
 
         return String(value)
             .replace(
@@ -1005,4 +1399,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
+
+    // ========================================================
+    // INITIALIZE
+    // ========================================================
+
+    console.log(
+        "Finance Date Recovery Tool - upload.js loaded."
+    );
+
+    console.log(
+        "Authentication token:",
+        getAuthToken()
+            ? "FOUND"
+            : "NOT FOUND"
+    );
+
 });
+
