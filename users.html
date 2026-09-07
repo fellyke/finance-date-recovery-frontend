@@ -1,14 +1,23 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+```
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Users | Finance Date Recovery Tool</title>
+<title>Users | Finance Date Recovery Tool</title>
 
-    <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
+
+<!-- Font Awesome Icons -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+```
 
 </head>
 
@@ -16,330 +25,473 @@
 
 <div class="app-layout">
 
-    <!-- SIDEBAR -->
+```
+<!-- ======================================================
+     SIDEBAR
+======================================================= -->
 
-    <aside class="sidebar">
+<aside class="sidebar">
 
-        <div class="sidebar-header">
 
-            <div class="logo">
-                <img src="assets/logo.png" alt="Logo">
-            </div>
+    <div class="sidebar-header">
 
-            <div class="brand-name">
-                Finance Recovery
-            </div>
+        <div class="logo">
+
+            <img
+                src="assets/logo.png"
+                alt="Logo"
+            >
+
+        </div>
+
+        <div class="brand-name">
+            Finance Recovery
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         SIDEBAR NAVIGATION
+    =================================================== -->
+
+    <nav class="sidebar-menu">
+
+
+        <a
+            href="dashboard.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-house"></i>
+            </span>
+
+            <span>
+                Dashboard
+            </span>
+
+        </a>
+
+
+        <a
+            href="date-recovery.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-calendar-check"></i>
+            </span>
+
+            <span>
+                Date Recovery
+            </span>
+
+        </a>
+
+
+        <a
+            href="upload.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-file-arrow-up"></i>
+            </span>
+
+            <span>
+                Upload Excel Logbook
+            </span>
+
+        </a>
+
+
+        <a
+            href="records.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-table-list"></i>
+            </span>
+
+            <span>
+                Financial Records
+            </span>
+
+        </a>
+
+
+        <a
+            href="uploaded-files.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-folder-open"></i>
+            </span>
+
+            <span>
+                Uploaded Files
+            </span>
+
+        </a>
+
+
+        <a
+            href="history.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </span>
+
+            <span>
+                Recovery History
+            </span>
+
+        </a>
+
+
+        <a
+            href="users.html"
+            class="menu-item active"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-users"></i>
+            </span>
+
+            <span>
+                Users
+            </span>
+
+        </a>
+
+
+        <a
+            href="settings.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-gear"></i>
+            </span>
+
+            <span>
+                Settings
+            </span>
+
+        </a>
+
+
+    </nav>
+
+
+    <!-- ==================================================
+         SIDEBAR FOOTER
+    =================================================== -->
+
+    <div class="sidebar-footer">
+
+
+        <a
+            href="index.html"
+            class="menu-item logout-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </span>
+
+            <span>
+                Logout
+            </span>
+
+        </a>
+
+
+    </div>
+
+
+</aside>
+
+
+<!-- ======================================================
+     MAIN CONTENT
+======================================================= -->
+
+<main class="main-content">
+
+
+    <!-- ==================================================
+         TOPBAR
+    =================================================== -->
+
+    <header class="topbar">
+
+
+        <div>
+
+            <h1>
+
+                <i class="fa-solid fa-users"></i>
+
+                Users
+
+            </h1>
+
+
+            <p class="page-subtitle">
+
+                Manage system users and access roles.
+
+            </p>
 
         </div>
 
 
-        <nav class="sidebar-menu">
+        <!-- ==================================================
+             USER AREA
+        =================================================== -->
 
-            <a href="dashboard.html" class="menu-item">
-                <span class="menu-icon">⌂</span>
-                <span>Dashboard</span>
-            </a>
-
-            <a href="date-recovery.html" class="menu-item">
-                <span class="menu-icon">⌕</span>
-                <span>Date Recovery</span>
-            </a>
-
-            <a href="upload.html" class="menu-item">
-                <span class="menu-icon">↑</span>
-                <span>Upload Excel Logbook</span>
-            </a>
-
-            <a href="records.html" class="menu-item">
-                <span class="menu-icon">▤</span>
-                <span>Financial Records</span>
-            </a>
-
-            <a href="uploaded-files.html" class="menu-item">
-                <span class="menu-icon">□</span>
-                <span>Uploaded Files</span>
-            </a>
-
-            <a href="history.html" class="menu-item">
-                <span class="menu-icon">◷</span>
-                <span>Recovery History</span>
-            </a>
-
-            <a href="users.html" class="menu-item active">
-                <span class="menu-icon">♙</span>
-                <span>Users</span>
-            </a>
-
-            <a href="settings.html" class="menu-item">
-                <span class="menu-icon">⚙</span>
-                <span>Settings</span>
-            </a>
-
-        </nav>
+        <div class="user-area">
 
 
-        <div class="sidebar-footer">
+            <div class="user-avatar">
 
-            <a href="index.html" class="menu-item logout-item">
-                <span class="menu-icon">⇥</span>
-                <span>Logout</span>
-            </a>
+                A
+
+            </div>
+
+
+            <div class="user-info">
+
+                <strong>
+                    Admin
+                </strong>
+
+
+                <span>
+                    Administrator
+                </span>
+
+            </div>
+
 
         </div>
 
-    </aside>
 
+    </header>
 
-    <!-- MAIN CONTENT -->
 
-    <main class="main-content">
+    <!-- ======================================================
+         PAGE CONTENT
+    ======================================================= -->
 
+    <section class="page-content">
 
-        <!-- TOPBAR -->
 
-        <header class="topbar">
+        <div class="panel">
 
-            <div>
 
-                <h1>Users</h1>
+            <!-- ==================================================
+                 PANEL HEADER
+            =================================================== -->
 
-                <p class="page-subtitle">
-                    Manage system users and access roles.
-                </p>
+            <div class="panel-header">
 
-            </div>
 
+                <div>
 
-            <div class="user-area">
+                    <h2>
 
-                <div class="user-avatar">
-                    A
-                </div>
+                        <i class="fa-solid fa-user-shield"></i>
 
-                <div class="user-info">
+                        System Users
 
-                    <strong>Admin</strong>
+                    </h2>
 
-                    <span>
-                        Administrator
-                    </span>
-
-                </div>
-
-            </div>
-
-        </header>
-
-
-        <!-- PAGE CONTENT -->
-
-        <section class="page-content">
-
-
-            <div class="panel">
-
-
-                <!-- PANEL HEADER -->
-
-                <div class="panel-header">
-
-                    <div>
-
-                        <h2>
-                            System Users
-                        </h2>
-
-                        <p>
-                            Authorized users of the recovery system.
-                        </p>
-
-                    </div>
-
-
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        id="addUserButton"
-                    >
-                        Add User
-                    </button>
-
-                </div>
-
-
-                <!-- ADD USER FORM -->
-
-                <div
-                    id="userForm"
-                    class="user-form"
-                    style="display: none;"
-                >
-
-                    <h3>
-                        Add New User
-                    </h3>
-
-
-                    <div class="form-group">
-
-                        <label for="userName">
-                            Full Name
-                        </label>
-
-                        <input
-                            type="text"
-                            id="userName"
-                            placeholder="Enter full name"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="userUsername">
-                            Username
-                        </label>
-
-                        <input
-                            type="text"
-                            id="userUsername"
-                            placeholder="Enter username"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="userPassword">
-                            Password
-                        </label>
-
-                        <input
-                            type="password"
-                            id="userPassword"
-                            placeholder="Enter password"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="userRole">
-                            Role
-                        </label>
-
-                        <select id="userRole">
-
-                            <option value="Administrator">
-                                Administrator
-                            </option>
-
-                            <option value="Staff">
-                                Staff
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-actions">
-
-                        <button
-                            type="button"
-                            class="btn btn-primary"
-                            id="saveUserButton"
-                        >
-                            Save User
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="btn"
-                            id="cancelUserButton"
-                        >
-                            Cancel
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <!-- EMPTY STATE -->
-
-                <div
-                    class="empty-state"
-                    id="emptyState"
-                >
-
-                    <div class="empty-state-icon">
-                        ♙
-                    </div>
-
-                    <h3>
-                        No Users Available
-                    </h3>
 
                     <p>
-                        Users will be displayed here once they are created.
+
+                        Authorized users of the recovery system.
+
                     </p>
 
                 </div>
 
 
-                <!-- USERS TABLE -->
+                <!-- ==================================================
+                     ADD USER BUTTON
+                =================================================== -->
 
-                <div
-                    class="table-container"
-                    id="usersTable"
-                    style="display: none;"
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="addUserButton"
                 >
 
-                    <table class="data-table">
+                    <i class="fa-solid fa-user-plus"></i>
 
-                        <thead>
+                    Add User
 
-                            <tr>
-
-                                <th>
-                                    Name
-                                </th>
-
-                                <th>
-                                    Username
-                                </th>
-
-                                <th>
-                                    Role
-                                </th>
-
-                                <th>
-                                    Status
-                                </th>
-
-                                <th>
-                                    Date Created
-                                </th>
-
-                                <th>
-                                    Action
-                                </th>
-
-                            </tr>
-
-                        </thead>
+                </button>
 
 
-                        <tbody id="usersBody">
+            </div>
 
-                        </tbody>
 
-                    </table>
+            <!-- ==================================================
+                 ADD USER FORM
+            =================================================== -->
+
+            <div
+                id="userForm"
+                class="user-form"
+                style="display: none;"
+            >
+
+
+                <h3>
+
+                    <i class="fa-solid fa-user-plus"></i>
+
+                    Add New User
+
+                </h3>
+
+
+                <div class="form-group">
+
+
+                    <label for="userName">
+
+                        <i class="fa-solid fa-user"></i>
+
+                        Full Name
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="userName"
+                        placeholder="Enter full name"
+                    >
+
+
+                </div>
+
+
+                <div class="form-group">
+
+
+                    <label for="userUsername">
+
+                        <i class="fa-solid fa-at"></i>
+
+                        Username
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="userUsername"
+                        placeholder="Enter username"
+                    >
+
+
+                </div>
+
+
+                <div class="form-group">
+
+
+                    <label for="userPassword">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        Password
+
+                    </label>
+
+
+                    <input
+                        type="password"
+                        id="userPassword"
+                        placeholder="Enter password"
+                    >
+
+
+                </div>
+
+
+                <div class="form-group">
+
+
+                    <label for="userRole">
+
+                        <i class="fa-solid fa-user-tag"></i>
+
+                        Role
+
+                    </label>
+
+
+                    <select id="userRole">
+
+
+                        <option value="Administrator">
+                            Administrator
+                        </option>
+
+
+                        <option value="Staff">
+                            Staff
+                        </option>
+
+
+                    </select>
+
+
+                </div>
+
+
+                <!-- ==================================================
+                     FORM ACTIONS
+                =================================================== -->
+
+                <div class="form-actions">
+
+
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        id="saveUserButton"
+                    >
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        Save User
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn"
+                        id="cancelUserButton"
+                    >
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                        Cancel
+
+                    </button>
+
 
                 </div>
 
@@ -347,17 +499,148 @@
             </div>
 
 
-        </section>
+            <!-- ==================================================
+                 EMPTY STATE
+            =================================================== -->
+
+            <div
+                class="empty-state"
+                id="emptyState"
+            >
 
 
-    </main>
+                <div class="empty-state-icon">
+
+                    <i class="fa-solid fa-users"></i>
+
+                </div>
+
+
+                <h3>
+
+                    No Users Available
+
+                </h3>
+
+
+                <p>
+
+                    Users will be displayed here once they are created.
+
+                </p>
+
+
+            </div>
+
+
+            <!-- ==================================================
+                 USERS TABLE
+            =================================================== -->
+
+            <div
+                class="table-container"
+                id="usersTable"
+                style="display: none;"
+            >
+
+
+                <table class="data-table">
+
+
+                    <thead>
+
+
+                        <tr>
+
+
+                            <th>
+
+                                <i class="fa-solid fa-user"></i>
+
+                                Name
+
+                            </th>
+
+
+                            <th>
+
+                                <i class="fa-solid fa-at"></i>
+
+                                Username
+
+                            </th>
+
+
+                            <th>
+
+                                <i class="fa-solid fa-user-tag"></i>
+
+                                Role
+
+                            </th>
+
+
+                            <th>
+
+                                <i class="fa-solid fa-circle-check"></i>
+
+                                Status
+
+                            </th>
+
+
+                            <th>
+
+                                <i class="fa-solid fa-calendar-plus"></i>
+
+                                Date Created
+
+                            </th>
+
+
+                            <th>
+
+                                <i class="fa-solid fa-bolt"></i>
+
+                                Action
+
+                            </th>
+
+
+                        </tr>
+
+
+                    </thead>
+
+
+                    <tbody id="usersBody">
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+</main>
+```
 
 </div>
 
-
-<!-- JAVASCRIPT -->
+<!-- ==========================================================
+     JAVASCRIPT
+=========================================================== -->
 
 <script src="script.js"></script>
+
 <script src="users.js"></script>
 
 </body>

@@ -1,143 +1,195 @@
-
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
+```
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <title>Finance Date Recovery Tool</title>
+<title>Finance Date Recovery Tool</title>
 
-    <link rel="stylesheet" href="style.css">
+
+<!-- Font Awesome -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+
+
+<link rel="stylesheet" href="style.css">
+```
 
 </head>
 
-
 <body>
-
 
 <div class="login-page">
 
-    <div class="login-card">
+```
+<div class="login-card">
 
 
-        <!-- =====================================================
-             LOGO
-        ====================================================== -->
+    <!-- =====================================================
+         LOGO
+    ====================================================== -->
 
-        <div class="login-logo">
+    <div class="login-logo">
 
-            <div class="logo-box">
-            </div>
 
-            <div class="logo-text">
+        <div class="logo-box">
 
-                <h1>FINANCE</h1>
-
-                <span>
-                    DATE RECOVERY TOOL
-                </span>
-
-            </div>
+            <i class="fa-solid fa-building-columns"></i>
 
         </div>
 
 
-        <!-- =====================================================
-             LOGIN TITLE
-        ====================================================== -->
+        <div class="logo-text">
 
-        <h2>Staff Login</h2>
+            <h1>
+                FINANCE
+            </h1>
 
-        <p class="login-description">
-            Secure login to your account
-        </p>
+            <span>
+                DATE RECOVERY TOOL
+            </span>
 
-
-        <!-- =====================================================
-             LOGIN FORM
-        ====================================================== -->
-
-        <form id="loginForm">
-
-
-            <!-- USERNAME -->
-
-            <div class="form-group">
-
-                <label for="username">
-                    Username
-                </label>
-
-                <input
-                    type="text"
-                    id="username"
-                    placeholder="Enter your username"
-                    required
-                >
-
-            </div>
-
-
-            <!-- PASSWORD -->
-
-            <div class="form-group">
-
-                <label for="password">
-                    Password
-                </label>
-
-                <input
-                    type="password"
-                    id="password"
-                    placeholder="Enter your password"
-                    required
-                >
-
-            </div>
-
-
-            <!-- ERROR MESSAGE -->
-
-            <div
-                id="errorMessage"
-                class="error-message">
-            </div>
-
-
-            <!-- LOGIN BUTTON -->
-
-            <button
-                type="submit"
-                id="loginButton"
-                class="login-button">
-
-                Login
-
-            </button>
-
-
-        </form>
-
-
-        <!-- =====================================================
-             FOOTER
-        ====================================================== -->
-
-        <p class="login-footer">
-
-            Finance Date Recovery Tool
-
-        </p>
+        </div>
 
 
     </div>
 
-</div>
 
+    <!-- =====================================================
+         LOGIN TITLE
+    ====================================================== -->
+
+    <h2>
+
+        <i class="fa-solid fa-shield-halved"></i>
+
+        Staff Login
+
+    </h2>
+
+
+    <p class="login-description">
+
+        Secure login to your account
+
+    </p>
+
+
+    <!-- =====================================================
+         LOGIN FORM
+    ====================================================== -->
+
+    <form id="loginForm">
+
+
+        <!-- USERNAME -->
+
+        <div class="form-group">
+
+
+            <label for="username">
+
+                <i class="fa-solid fa-user"></i>
+
+                Username
+
+            </label>
+
+
+            <input
+                type="text"
+                id="username"
+                placeholder="Enter your username"
+                autocomplete="username"
+                required
+            >
+
+
+        </div>
+
+
+
+        <!-- PASSWORD -->
+
+        <div class="form-group">
+
+
+            <label for="password">
+
+                <i class="fa-solid fa-lock"></i>
+
+                Password
+
+            </label>
+
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+            >
+
+
+        </div>
+
+
+
+        <!-- ERROR MESSAGE -->
+
+        <div
+            id="errorMessage"
+            class="error-message"
+        >
+        </div>
+
+
+
+        <!-- LOGIN BUTTON -->
+
+        <button
+            type="submit"
+            id="loginButton"
+            class="login-button"
+        >
+
+            <i class="fa-solid fa-right-to-bracket"></i>
+
+            Login
+
+        </button>
+
+
+    </form>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <p class="login-footer">
+
+        <i class="fa-regular fa-copyright"></i>
+
+        Finance Date Recovery Tool
+
+    </p>
+
+
+</div>
+```
+
+</div>
 
 <!-- =========================================================
      LOGIN JAVASCRIPT
@@ -145,8 +197,6 @@
 
 <script src="index.js"></script>
 
-
 </body>
 
 </html>
-

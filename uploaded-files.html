@@ -1,199 +1,496 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Uploaded Files | Finance Date Recovery Tool</title>
+```
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="style.css">
+<title>Uploaded Files | Finance Date Recovery Tool</title>
+
+<!-- Main Stylesheet -->
+<link rel="stylesheet" href="style.css">
+
+<!-- Font Awesome Icons -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+```
+
 </head>
 
 <body>
 
 <div class="app-layout">
 
-    <aside class="sidebar">
+```
+<!-- ======================================================
+     SIDEBAR
+======================================================= -->
 
-        <div class="sidebar-header">
+<aside class="sidebar">
 
-            <div class="logo">
-                <img src="assets/logo.png" alt="Logo">
-            </div>
 
-            <div class="brand-name">
-                Finance Recovery
-            </div>
+    <div class="sidebar-header">
+
+        <div class="logo">
+
+            <img
+                src="assets/logo.png"
+                alt="Logo"
+            >
+
+        </div>
+
+
+        <div class="brand-name">
+            Finance Recovery
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         SIDEBAR NAVIGATION
+    =================================================== -->
+
+    <nav class="sidebar-menu">
+
+
+        <a
+            href="dashboard.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-house"></i>
+            </span>
+
+            <span>
+                Dashboard
+            </span>
+
+        </a>
+
+
+        <a
+            href="date-recovery.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-calendar-check"></i>
+            </span>
+
+            <span>
+                Date Recovery
+            </span>
+
+        </a>
+
+
+        <a
+            href="upload.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-file-arrow-up"></i>
+            </span>
+
+            <span>
+                Upload Excel
+            </span>
+
+        </a>
+
+
+        <a
+            href="records.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-table-list"></i>
+            </span>
+
+            <span>
+                Financial Records
+            </span>
+
+        </a>
+
+
+        <a
+            href="uploaded-files.html"
+            class="menu-item active"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-folder-open"></i>
+            </span>
+
+            <span>
+                Uploaded Files
+            </span>
+
+        </a>
+
+
+        <a
+            href="history.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </span>
+
+            <span>
+                Recovery History
+            </span>
+
+        </a>
+
+
+        <a
+            href="users.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-users"></i>
+            </span>
+
+            <span>
+                Users
+            </span>
+
+        </a>
+
+
+        <a
+            href="settings.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-gear"></i>
+            </span>
+
+            <span>
+                Settings
+            </span>
+
+        </a>
+
+
+    </nav>
+
+
+    <!-- ==================================================
+         SIDEBAR FOOTER
+    =================================================== -->
+
+    <div class="sidebar-footer">
+
+
+        <a
+            href="index.html"
+            class="menu-item logout-item"
+        >
+
+            <span class="menu-icon">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </span>
+
+            <span>
+                Logout
+            </span>
+
+        </a>
+
+
+    </div>
+
+
+</aside>
+
+
+<!-- ======================================================
+     MAIN CONTENT
+======================================================= -->
+
+<main class="main-content">
+
+
+    <!-- ==================================================
+         TOPBAR
+    =================================================== -->
+
+    <header class="topbar">
+
+
+        <div>
+
+            <h1>
+
+                <i class="fa-solid fa-folder-open"></i>
+
+                Uploaded Files
+
+            </h1>
+
+
+            <p class="page-subtitle">
+
+                Manage imported Excel files.
+
+            </p>
 
         </div>
 
 
-        <nav class="sidebar-menu">
+        <!-- ==================================================
+             USER AREA
+        =================================================== -->
 
-            <a href="dashboard.html" class="menu-item">
-                <span class="menu-icon">⌂</span>
-                <span>Dashboard</span>
-            </a>
-
-            <a href="date-recovery.html" class="menu-item">
-                <span class="menu-icon">⌕</span>
-                <span>Date Recovery</span>
-            </a>
-
-            <a href="upload.html" class="menu-item">
-                <span class="menu-icon">↑</span>
-                <span>Upload Excel </span>
-            </a>
-
-            <a href="records.html" class="menu-item">
-                <span class="menu-icon">▤</span>
-                <span>Financial Records</span>
-            </a>
-
-            <a href="uploaded-files.html" class="menu-item active">
-                <span class="menu-icon">□</span>
-                <span>Uploaded Files</span>
-            </a>
-
-            <a href="history.html" class="menu-item">
-                <span class="menu-icon">◷</span>
-                <span>Recovery History</span>
-            </a>
-
-            <a href="users.html" class="menu-item">
-                <span class="menu-icon">♙</span>
-                <span>Users</span>
-            </a>
-
-            <a href="settings.html" class="menu-item">
-                <span class="menu-icon">⚙</span>
-                <span>Settings</span>
-            </a>
-
-        </nav>
+        <div class="user-area">
 
 
-        <div class="sidebar-footer">
+            <div class="user-avatar">
 
-            <a href="index.html" class="menu-item logout-item">
-                <span class="menu-icon">⇥</span>
-                <span>Logout</span>
-            </a>
+                A
+
+            </div>
+
+
+            <div class="user-info">
+
+                <strong>
+                    Admin
+                </strong>
+
+
+                <span>
+                    Administrator
+                </span>
+
+            </div>
+
 
         </div>
 
-    </aside>
+
+    </header>
 
 
-    <main class="main-content">
+    <!-- ======================================================
+         PAGE CONTENT
+    ======================================================= -->
 
-        <header class="topbar">
-
-            <div>
-
-                <h1>Uploaded Files</h1>
-
-                <p class="page-subtitle">
-                    Manage imported Excel files.
-                </p>
-
-            </div>
+    <section class="page-content">
 
 
-            <div class="user-area">
+        <!-- ==================================================
+             UPLOADED FILES PANEL
+        =================================================== -->
 
-                <div class="user-avatar">A</div>
-
-                <div class="user-info">
-                    <strong>Admin</strong>
-                    <span>Administrator</span>
-                </div>
-
-            </div>
-
-        </header>
+        <div class="panel">
 
 
-        <section class="page-content">
-
-            <div class="panel">
-
-                <div class="panel-header">
-
-                    <div>
-
-                        <h2>Excel files</h2>
-
-                        <p>
-                            Files imported into the system.
-                        </p>
-
-                    </div>
+            <div class="panel-header">
 
 
-                    <a
-                        href="upload.html"
-                        class="btn btn-primary"
-                    >
-                        Upload New File
-                    </a>
-
-                </div>
+                <div>
 
 
-                <div class="empty-state">
+                    <h2>
 
-                    <div class="empty-state-icon">
-                        □
-                    </div>
+                        <i class="fa-solid fa-file-excel"></i>
 
-                    <h3>No Uploaded Files</h3>
+                        Excel Files
+
+                    </h2>
+
 
                     <p>
-                        Excel logbooks uploaded to the system will appear here.
+
+                        Files imported into the system.
+
                     </p>
 
+
                 </div>
 
 
-                <div
-                    class="table-container"
-                    style="display:none;"
-                    id="uploadedFilesTable"
+                <!-- ==================================================
+                     UPLOAD NEW FILE BUTTON
+                =================================================== -->
+
+                <a
+                    href="upload.html"
+                    class="btn btn-primary"
                 >
 
-                    <table class="data-table">
+                    <i class="fa-solid fa-file-arrow-up"></i>
 
-                        <thead>
+                    Upload New File
 
-                            <tr>
-                                <th>File Name</th>
-                                <th>Logbook Name</th>
-                                <th>Financial Year</th>
-                                <th>Branch</th>
-                                <th>Records</th>
-                                <th>Uploaded By</th>
-                                <th>Date Uploaded</th>
-                                <th>Action</th>
-                            </tr>
+                </a>
 
-                        </thead>
-
-                        <tbody id="uploadedFilesBody"></tbody>
-
-                    </table>
-
-                </div>
 
             </div>
 
-        </section>
 
-    </main>
+            <!-- ==================================================
+                 EMPTY STATE
+            =================================================== -->
+
+            <div class="empty-state">
+
+
+                <div class="empty-state-icon">
+
+                    <i class="fa-solid fa-folder-open"></i>
+
+                </div>
+
+
+                <h3>
+
+                    No Uploaded Files
+
+                </h3>
+
+
+                <p>
+
+                    Excel logbooks uploaded to the system will appear here.
+
+                </p>
+
+
+                <a
+                    href="upload.html"
+                    class="btn btn-secondary"
+                >
+
+                    <i class="fa-solid fa-upload"></i>
+
+                    Upload File
+
+                </a>
+
+
+            </div>
+
+
+            <!-- ==================================================
+                 UPLOADED FILES TABLE
+            =================================================== -->
+
+            <div
+                class="table-container"
+                style="display:none;"
+                id="uploadedFilesTable"
+            >
+
+
+                <table class="data-table">
+
+
+                    <thead>
+
+
+                        <tr>
+
+
+                            <th>
+                                <i class="fa-solid fa-file-excel"></i>
+                                File Name
+                            </th>
+
+
+                            <th>
+                                <i class="fa-solid fa-book"></i>
+                                Logbook Name
+                            </th>
+
+
+                            <th>
+                                <i class="fa-solid fa-calendar-days"></i>
+                                Financial Year
+                            </th>
+
+
+                            <th>
+                                <i class="fa-solid fa-building"></i>
+                                Branch
+                            </th>
+
+
+                            <th>
+                                <i class="fa-solid fa-database"></i>
+                                Records
+                            </th>
+
+
+                            <th>
+                                <i class="fa-solid fa-user"></i>
+                                Uploaded By
+                            </th>
+
+
+                            <th>
+                                <i class="fa-solid fa-calendar-check"></i>
+                                Date Uploaded
+                            </th>
+
+
+                            <th>
+                                <i class="fa-solid fa-bolt"></i>
+                                Action
+                            </th>
+
+
+                        </tr>
+
+
+                    </thead>
+
+
+                    <tbody id="uploadedFilesBody"></tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+</main>
+```
 
 </div>
 
+<!-- ==========================================================
+     JAVASCRIPT
+=========================================================== -->
+
 <script src="script.js"></script>
+
 <script src="uploaded-files.js"></script>
+
 </body>
+
 </html>
