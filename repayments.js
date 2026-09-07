@@ -1,1396 +1,2301 @@
 
-// ============================================================
-// FINANCE DATE RECOVERY TOOL
-// REPAYMENTS API
-// routes/repayments.js
-//
 
 
 "use strict";
 
-const express = require("express");
 
-const db = require("../config/database");
-const authenticateToken = require("../middleware/auth");
+// ============================================================
+// API CONFIGURATION
+// ============================================================
 
-const router = express.Router();
+const API_BASE_URL =
+    "https://finance-date-recovery-backend.onrender.com/api";
+
+const REPAYMENTS_API =
+    `${API_BASE_URL}/repayments`;
 
 
 // ============================================================
-// HELPER: NORMALIZE NUMBER
+// PAGINATION
 // ============================================================
 
-function normalizeNumber(value) {
+let currentPage = 1;
 
-    if (
-        value === null ||
-        value === undefined ||
-        value === ""
-    ) {
-        return 0;
+const pageSize = 50;
+
+let totalPages = 1;
+
+let isLoading = false;
+
+
+// ============================================================
+// DOM READY
+// ============================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        initializeRepaymentsPage();
+
     }
+);
 
-    if (typeof value === "number") {
 
-        return Number.isFinite(value)
-            ? value
-            : 0;
-    }
+// ============================================================
+// INITIALIZE
+// ============================================================
 
-    const cleaned =
-        String(value)
-            .replace(/,/g, "")
-            .replace(/KES/gi, "")
-            .replace(/KSH/gi, "")
-            .trim();
+function initializeRepaymentsPage() {
 
-    const number =
-        Number(cleaned);
+    setupSearchAndFilters();
 
-    return Number.isFinite(number)
-        ? number
-        : 0;
+    setupPaginationButtons();
+
+    loadRepayments();
+
 }
 
 
 // ============================================================
-// HELPER: NORMALIZE LOAN NUMBER
+// TOKEN
 // ============================================================
 
-function normalizeLoanNumber(value) {
+function getToken() {
 
-    if (
-        value === null ||
-        value === undefined ||
-        value === ""
-    ) {
-        return null;
+    return (
+        localStorage.getItem("token") ||
+        sessionStorage.getItem("token") ||
+        localStorage.getItem("authToken") ||
+        sessionStorage.getItem("authToken") ||
+        localStorage.getItem("accessToken") ||
+        sessionStorage.getItem("accessToken") ||
+        null
+    );
+
+}
+
+
+// ============================================================
+// AUTHENTICATED REQUEST
+// ============================================================
+
+async function apiRequest(
+    url,
+    options = {}
+) {
+
+    const token = getToken();
+
+    const headers = {
+
+        "Content-Type":
+            "application/json",
+
+        ...(options.headers || {})
+
+    };
+
+
+    if (token) {
+
+        headers.Authorization =
+            `Bearer ${token}`;
+
     }
 
-    let loanNumber =
-        String(value).trim();
 
-    // Excel sometimes sends:
-    // 12345.0
-    //
-    // Convert it to:
-    // 12345
+    const response =
+        await fetch(
+            url,
+            {
+                ...options,
+                headers
+            }
+        );
+
+
+    let data;
+
+    try {
+
+        data =
+            await response.json();
+
+    } catch (error) {
+
+        data = {
+
+            success: false,
+
+            message:
+                "Invalid server response."
+
+        };
+
+    }
+
 
     if (
-        /^\d+\.0$/.test(
-            loanNumber
-        )
+        response.status === 401 ||
+        response.status === 403
     ) {
 
-        loanNumber =
-            loanNumber.replace(
-                ".0",
-                ""
+        handleAuthenticationError();
+
+    }
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.message ||
+            "Request failed."
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+// ============================================================
+// AUTHENTICATION ERROR
+// ============================================================
+
+function handleAuthenticationError() {
+
+    console.warn(
+        "Authentication token is missing or expired."
+    );
+
+    // Do not immediately redirect if the project
+    // has another authentication handler.
+
+    const message =
+        document.getElementById(
+            "message"
+        ) ||
+        document.getElementById(
+            "errorMessage"
+        );
+
+
+    if (message) {
+
+        message.textContent =
+            "Your session has expired. Please log in again.";
+
+    }
+
+}
+
+
+// ============================================================
+// LOAD REPAYMENTS
+// ============================================================
+
+async function loadRepayments() {
+
+    if (isLoading) {
+
+        return;
+
+    }
+
+
+    isLoading = true;
+
+
+    showLoading();
+
+
+    try {
+
+        const params =
+            buildQueryParameters();
+
+
+        const data =
+            await apiRequest(
+                `${REPAYMENTS_API}?${params}`
             );
+
+
+        if (!data.success) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load repayments."
+            );
+
+        }
+
+
+        const records =
+            Array.isArray(data.data)
+                ? data.data
+                : [];
+
+
+        renderRepayments(records);
+
+
+        updatePagination(
+            data.pagination
+        );
+
+
+        updateRecordCount(
+            data.pagination,
+            records
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "LOAD REPAYMENTS ERROR:",
+            error
+        );
+
+
+        showError(
+            error.message ||
+            "Unable to load repayment records."
+        );
+
+    } finally {
+
+        isLoading = false;
+
+        hideLoading();
+
     }
 
-    return loanNumber || null;
 }
 
 
 // ============================================================
-// HELPER: NORMALIZE STATUS
+// BUILD QUERY PARAMETERS
 // ============================================================
 
-function normalizeStatus(value) {
+function buildQueryParameters() {
 
-    const status =
-        String(value || "")
+    const params =
+        new URLSearchParams();
+
+
+    params.set(
+        "page",
+        currentPage
+    );
+
+
+    params.set(
+        "pageSize",
+        pageSize
+    );
+
+
+    // --------------------------------------------------------
+    // CUSTOMER
+    // --------------------------------------------------------
+
+    const customer =
+        getInputValue([
+            "customerSearch",
+            "customer",
+            "searchCustomer"
+        ]);
+
+
+    if (customer) {
+
+        params.set(
+            "customer",
+            customer
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // LOAN NUMBER
+    // --------------------------------------------------------
+
+    const loanNumber =
+        getInputValue([
+            "loanNumberSearch",
+            "loanNumber",
+            "searchLoanNumber"
+        ]);
+
+
+    if (loanNumber) {
+
+        params.set(
+            "loanNumber",
+            loanNumber
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // REFERENCE NUMBER
+    // --------------------------------------------------------
+
+    const referenceNumber =
+        getInputValue([
+            "referenceNumberSearch",
+            "referenceNumber",
+            "searchReferenceNumber"
+        ]);
+
+
+    if (referenceNumber) {
+
+        params.set(
+            "referenceNumber",
+            referenceNumber
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // RECEIPT NUMBER
+    // --------------------------------------------------------
+
+    const receiptNumber =
+        getInputValue([
+            "receiptNumberSearch",
+            "receiptNumber",
+            "searchReceiptNumber"
+        ]);
+
+
+    if (receiptNumber) {
+
+        params.set(
+            "receiptNumber",
+            receiptNumber
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // AMOUNT
+    // --------------------------------------------------------
+
+    const amount =
+        getInputValue([
+            "amountSearch",
+            "amount"
+        ]);
+
+
+    if (amount) {
+
+        params.set(
+            "amount",
+            amount
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // PAYMENT METHOD
+    // --------------------------------------------------------
+
+    const paymentMethod =
+        getInputValue([
+            "paymentMethod",
+            "paymentMethodFilter",
+            "method"
+        ]);
+
+
+    if (paymentMethod) {
+
+        params.set(
+            "paymentMethod",
+            paymentMethod
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // DATE FROM
+    // --------------------------------------------------------
+
+    const dateFrom =
+        getInputValue([
+            "dateFrom",
+            "startDate",
+            "repaymentDateFrom"
+        ]);
+
+
+    if (dateFrom) {
+
+        params.set(
+            "dateFrom",
+            dateFrom
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // DATE TO
+    // --------------------------------------------------------
+
+    const dateTo =
+        getInputValue([
+            "dateTo",
+            "endDate",
+            "repaymentDateTo"
+        ]);
+
+
+    if (dateTo) {
+
+        params.set(
+            "dateTo",
+            dateTo
+        );
+
+    }
+
+
+    return params;
+
+}
+
+
+// ============================================================
+// GET INPUT VALUE
+// ============================================================
+
+function getInputValue(ids) {
+
+    for (
+        const id of ids
+    ) {
+
+        const element =
+            document.getElementById(id);
+
+
+        if (element) {
+
+            const value =
+                String(
+                    element.value || ""
+                ).trim();
+
+
+            if (value) {
+
+                return value;
+
+            }
+
+        }
+
+    }
+
+
+    return "";
+
+}
+
+
+// ============================================================
+// RENDER REPAYMENTS
+// ============================================================
+
+function renderRepayments(records) {
+
+    const tbody =
+        findRepaymentTableBody();
+
+
+    if (!tbody) {
+
+        console.error(
+            "Repayment table body was not found."
+        );
+
+        return;
+
+    }
+
+
+    tbody.innerHTML = "";
+
+
+    if (records.length === 0) {
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td
+                colspan="11"
+                style="text-align:center;"
+            >
+                No repayment records found.
+            </td>
+
+        `;
+
+
+        tbody.appendChild(row);
+
+        return;
+
+    }
+
+
+    records.forEach(
+        function (record) {
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${escapeHtml(
+                        record.customer
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        record.loan_number
+                    )}
+                </td>
+
+                <td>
+                    ${formatDate(
+                        record.repayment_date
+                    )}
+                </td>
+
+                <td>
+                    ${formatAmount(
+                        record.amount
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        record.payment_method
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        record.reference_number
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        record.receipt_number
+                    )}
+                </td>
+
+                <td>
+                    ${formatAmount(
+                        record.balance
+                    )}
+                </td>
+
+                <td>
+                    ${renderStatus(
+                        record.status
+                    )}
+                </td>
+
+                <td>
+                    ${record.id}
+                </td>
+
+                <td>
+
+                    <div
+                        class="repayment-actions"
+                    >
+
+                        <button
+                            type="button"
+                            class="view-btn"
+                            onclick="viewRepayment(${record.id})"
+                        >
+                            View
+                        </button>
+
+                        <button
+                            type="button"
+                            class="edit-btn"
+                            onclick="editRepayment(${record.id})"
+                        >
+                            Edit
+                        </button>
+
+                        <button
+                            type="button"
+                            class="delete-btn"
+                            onclick="deleteRepayment(${record.id})"
+                        >
+                            Delete
+                        </button>
+
+                    </div>
+
+                </td>
+
+            `;
+
+
+            tbody.appendChild(row);
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// FIND TABLE BODY
+// ============================================================
+
+function findRepaymentTableBody() {
+
+    const ids = [
+
+        "repaymentsTableBody",
+
+        "repaymentTableBody",
+
+        "repaymentsBody",
+
+        "repaymentBody",
+
+        "tableBody"
+
+    ];
+
+
+    for (
+        const id of ids
+    ) {
+
+        const element =
+            document.getElementById(id);
+
+
+        if (element) {
+
+            return element;
+
+        }
+
+    }
+
+
+    // Fallback: find tbody inside a table
+
+    const table =
+        document.querySelector(
+            "#repaymentsTable, #repaymentTable, table"
+        );
+
+
+    if (table) {
+
+        return table.querySelector("tbody");
+
+    }
+
+
+    return null;
+
+}
+
+
+// ============================================================
+// STATUS
+// ============================================================
+
+function renderStatus(status) {
+
+    const normalized =
+        String(status || "")
             .trim()
             .toLowerCase();
 
-    if (status === "verified") {
 
-        return "Verified";
+    if (
+        normalized === "verified"
+    ) {
+
+        return `
+            <span class="status verified">
+                Verified
+            </span>
+        `;
+
     }
 
-    return "Unverified";
+
+    return `
+        <span class="status unverified">
+            Unverified
+        </span>
+    `;
+
 }
 
 
 // ============================================================
-// HELPER: GET BODY VALUE
-//
-// Supports both:
-//
-// loan_number
-//
-// and:
-//
-// loanNumber
+// FORMAT AMOUNT
 // ============================================================
 
-function getBodyValue(
-    body,
-    snakeCase,
-    camelCase
-) {
+function formatAmount(value) {
+
+    const number =
+        Number(value);
+
 
     if (
-        body[snakeCase] !== undefined
+        !Number.isFinite(number)
     ) {
 
-        return body[snakeCase];
+        return "0.00";
+
     }
 
-    if (
-        body[camelCase] !== undefined
-    ) {
 
-        return body[camelCase];
-    }
+    return number.toLocaleString(
+        "en-KE",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
 
-    return null;
 }
 
 
 // ============================================================
-// GET ALL REPAYMENTS
-// GET /api/repayments
+// FORMAT DATE
 // ============================================================
 
-router.get(
-    "/",
-    authenticateToken,
-    async (req, res) => {
+function formatDate(value) {
 
-        try {
+    if (!value) {
 
-            const {
-                customer,
-                loanNumber,
-                referenceNumber,
-                receiptNumber,
-                amount,
-                paymentMethod,
-                dateFrom,
-                dateTo
-            } = req.query;
+        return "-";
 
+    }
 
-            // ==================================================
-            // BASE QUERY
-            // ==================================================
 
-            let sql = `
+    const date =
+        new Date(value);
 
-                SELECT
 
-                    id,
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
 
-                    customer,
+        return escapeHtml(
+            value
+        );
 
-                    loan_number,
+    }
 
-                    repayment_date,
 
-                    amount,
+    return date.toLocaleDateString(
+        "en-GB"
+    );
 
-                    payment_method,
+}
 
-                    reference_number,
 
-                    receipt_number,
+// ============================================================
+// ESCAPE HTML
+// ============================================================
 
-                    balance,
+function escapeHtml(value) {
 
-                    status,
+    if (
+        value === null ||
+        value === undefined
+    ) {
 
-                    financial_record_id,
+        return "-";
 
-                    created_at,
+    }
 
-                    updated_at
 
-                FROM public.repayments
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
-                WHERE 1 = 1
+}
 
-            `;
 
+// ============================================================
+// VIEW REPAYMENT
+// ============================================================
 
-            const values = [];
+async function viewRepayment(id) {
 
+    try {
 
-            // ==================================================
-            // CUSTOMER
-            // ==================================================
-
-            if (
-                customer &&
-                String(customer).trim() !== ""
-            ) {
-
-                values.push(
-                    `%${String(customer).trim()}%`
-                );
-
-                sql += `
-                    AND customer ILIKE $${values.length}
-                `;
-            }
-
-
-            // ==================================================
-            // LOAN NUMBER
-            // ==================================================
-
-            if (
-                loanNumber &&
-                String(loanNumber).trim() !== ""
-            ) {
-
-                values.push(
-                    `%${String(loanNumber).trim()}%`
-                );
-
-                sql += `
-                    AND CAST(loan_number AS TEXT)
-                        ILIKE $${values.length}
-                `;
-            }
-
-
-            // ==================================================
-            // REFERENCE NUMBER
-            // ==================================================
-
-            if (
-                referenceNumber &&
-                String(referenceNumber).trim() !== ""
-            ) {
-
-                values.push(
-                    `%${String(referenceNumber).trim()}%`
-                );
-
-                sql += `
-                    AND reference_number ILIKE $${values.length}
-                `;
-            }
-
-
-            // ==================================================
-            // RECEIPT NUMBER
-            // ==================================================
-
-            if (
-                receiptNumber &&
-                String(receiptNumber).trim() !== ""
-            ) {
-
-                values.push(
-                    `%${String(receiptNumber).trim()}%`
-                );
-
-                sql += `
-                    AND receipt_number ILIKE $${values.length}
-                `;
-            }
-
-
-            // ==================================================
-            // AMOUNT
-            // ==================================================
-
-            if (
-                amount !== undefined &&
-                amount !== ""
-            ) {
-
-                const numericAmount =
-                    normalizeNumber(amount);
-
-                values.push(
-                    numericAmount
-                );
-
-                sql += `
-                    AND amount = $${values.length}
-                `;
-            }
-
-
-            // ==================================================
-            // PAYMENT METHOD
-            // ==================================================
-
-            if (
-                paymentMethod &&
-                String(paymentMethod).trim() !== ""
-            ) {
-
-                values.push(
-                    String(paymentMethod).trim()
-                );
-
-                sql += `
-                    AND payment_method = $${values.length}
-                `;
-            }
-
-
-            // ==================================================
-            // DATE FROM
-            // ==================================================
-
-            if (dateFrom) {
-
-                values.push(
-                    dateFrom
-                );
-
-                sql += `
-                    AND repayment_date >= $${values.length}
-                `;
-            }
-
-
-            // ==================================================
-            // DATE TO
-            // ==================================================
-
-            if (dateTo) {
-
-                values.push(
-                    dateTo
-                );
-
-                sql += `
-                    AND repayment_date <= $${values.length}
-                `;
-            }
-
-
-            // ==================================================
-            // ORDER
-            // ==================================================
-
-            sql += `
-
-                ORDER BY
-
-                    repayment_date DESC NULLS LAST,
-
-                    id DESC
-
-            `;
-
-
-            // ==================================================
-            // EXECUTE
-            // ==================================================
-
-            const result =
-                await db.query(
-                    sql,
-                    values
-                );
-
-
-            // ==================================================
-            // RESPONSE
-            // ==================================================
-
-            return res.status(200).json({
-
-                success: true,
-
-                data: result.rows,
-
-                count: result.rows.length
-
-            });
-
-        } catch (error) {
-
-            console.error(
-                "GET REPAYMENTS ERROR:",
-                error
+        const data =
+            await apiRequest(
+                `${REPAYMENTS_API}/${id}`
             );
 
-            return res.status(500).json({
 
-                success: false,
+        if (!data.success) {
 
-                message:
-                    "Unable to load repayment records.",
-
-                error:
-                    process.env.NODE_ENV === "development"
-                        ? error.message
-                        : undefined
-
-            });
-        }
-    }
-);
-
-
-// ============================================================
-// GET SINGLE REPAYMENT
-// GET /api/repayments/:id
-// ============================================================
-
-router.get(
-    "/:id",
-    authenticateToken,
-    async (req, res) => {
-
-        try {
-
-            const {
-                id
-            } = req.params;
-
-
-            const result =
-                await db.query(
-
-                    `
-
-                    SELECT
-
-                        id,
-
-                        customer,
-
-                        loan_number,
-
-                        repayment_date,
-
-                        amount,
-
-                        payment_method,
-
-                        reference_number,
-
-                        receipt_number,
-
-                        balance,
-
-                        status,
-
-                        financial_record_id,
-
-                        created_at,
-
-                        updated_at
-
-                    FROM public.repayments
-
-                    WHERE id = $1
-
-                    `,
-
-                    [id]
-                );
-
-
-            if (
-                result.rows.length === 0
-            ) {
-
-                return res.status(404).json({
-
-                    success: false,
-
-                    message:
-                        "Repayment record not found."
-
-                });
-            }
-
-
-            return res.status(200).json({
-
-                success: true,
-
-                data:
-                    result.rows[0]
-
-            });
-
-        } catch (error) {
-
-            console.error(
-                "GET SINGLE REPAYMENT ERROR:",
-                error
+            throw new Error(
+                data.message ||
+                "Unable to load repayment."
             );
 
-            return res.status(500).json({
-
-                success: false,
-
-                message:
-                    "Unable to load repayment record.",
-
-                error:
-                    process.env.NODE_ENV === "development"
-                        ? error.message
-                        : undefined
-
-            });
         }
+
+
+        showRepaymentDetails(
+            data.data
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "VIEW REPAYMENT ERROR:",
+            error
+        );
+
+
+        showError(
+            error.message
+        );
+
     }
-);
+
+}
 
 
 // ============================================================
-// CREATE REPAYMENT
-// POST /api/repayments
+// SHOW REPAYMENT DETAILS
 // ============================================================
 
-router.post(
-    "/",
-    authenticateToken,
-    async (req, res) => {
+function showRepaymentDetails(record) {
 
-        try {
+    let modal =
+        document.getElementById(
+            "repaymentViewModal"
+        );
 
-            // ==================================================
-            // READ BODY
-            // ==================================================
 
-            const customer =
-                getBodyValue(
-                    req.body,
-                    "customer",
-                    "customer"
-                );
+    // --------------------------------------------------------
+    // CREATE MODAL IF IT DOES NOT EXIST
+    // --------------------------------------------------------
 
+    if (!modal) {
 
-            const loanNumber =
-                normalizeLoanNumber(
-                    getBodyValue(
-                        req.body,
-                        "loan_number",
-                        "loanNumber"
-                    )
-                );
-
-
-            const repaymentDate =
-                getBodyValue(
-                    req.body,
-                    "repayment_date",
-                    "repaymentDate"
-                );
-
-
-            const amount =
-                normalizeNumber(
-                    getBodyValue(
-                        req.body,
-                        "amount",
-                        "amount"
-                    )
-                );
-
-
-            const paymentMethod =
-                getBodyValue(
-                    req.body,
-                    "payment_method",
-                    "paymentMethod"
-                );
-
-
-            const referenceNumber =
-                getBodyValue(
-                    req.body,
-                    "reference_number",
-                    "referenceNumber"
-                );
-
-
-            const receiptNumber =
-                getBodyValue(
-                    req.body,
-                    "receipt_number",
-                    "receiptNumber"
-                );
-
-
-            const balance =
-                normalizeNumber(
-                    getBodyValue(
-                        req.body,
-                        "balance",
-                        "balance"
-                    )
-                );
-
-
-            const status =
-                normalizeStatus(
-                    getBodyValue(
-                        req.body,
-                        "status",
-                        "status"
-                    )
-                );
-
-
-            // ==================================================
-            // VALIDATION
-            // ==================================================
-
-            if (
-                !customer ||
-                String(customer).trim() === ""
-            ) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Customer is required."
-
-                });
-            }
-
-
-            if (!loanNumber) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Loan number is required."
-
-                });
-            }
-
-
-            if (
-                !repaymentDate
-            ) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Repayment date is required."
-
-                });
-            }
-
-
-            if (amount <= 0) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Repayment amount must be greater than zero."
-
-                });
-            }
-
-
-            // ==================================================
-            // FIND FINANCIAL RECORD
-            // ==================================================
-
-            let financialRecordId =
-                null;
-
-
-            const financialResult =
-                await db.query(
-
-                    `
-
-                    SELECT id
-
-                    FROM public.financial_records
-
-                    WHERE TRIM(
-                        CAST(loan_number AS TEXT)
-                    ) = $1
-
-                    ORDER BY id DESC
-
-                    LIMIT 1
-
-                    `,
-
-                    [
-                        loanNumber
-                    ]
-                );
-
-
-            if (
-                financialResult.rows.length > 0
-            ) {
-
-                financialRecordId =
-                    financialResult
-                        .rows[0]
-                        .id;
-            }
-
-
-            // ==================================================
-            // INSERT REPAYMENT
-            // ==================================================
-
-            const result =
-                await db.query(
-
-                    `
-
-                    INSERT INTO public.repayments
-
-                    (
-
-                        customer,
-
-                        loan_number,
-
-                        repayment_date,
-
-                        amount,
-
-                        payment_method,
-
-                        reference_number,
-
-                        receipt_number,
-
-                        balance,
-
-                        status,
-
-                        financial_record_id
-
-                    )
-
-                    VALUES
-
-                    (
-
-                        $1,
-
-                        $2,
-
-                        $3,
-
-                        $4,
-
-                        $5,
-
-                        $6,
-
-                        $7,
-
-                        $8,
-
-                        $9,
-
-                        $10
-
-                    )
-
-                    RETURNING
-
-                        id,
-
-                        customer,
-
-                        loan_number,
-
-                        repayment_date,
-
-                        amount,
-
-                        payment_method,
-
-                        reference_number,
-
-                        receipt_number,
-
-                        balance,
-
-                        status,
-
-                        financial_record_id,
-
-                        created_at,
-
-                        updated_at
-
-                    `,
-
-                    [
-
-                        String(customer).trim(),
-
-                        loanNumber,
-
-                        repaymentDate,
-
-                        amount,
-
-                        paymentMethod
-                            ? String(paymentMethod).trim()
-                            : null,
-
-                        referenceNumber
-                            ? String(referenceNumber).trim()
-                            : null,
-
-                        receiptNumber
-                            ? String(receiptNumber).trim()
-                            : null,
-
-                        balance,
-
-                        status,
-
-                        financialRecordId
-
-                    ]
-                );
-
-
-            // ==================================================
-            // RESPONSE
-            // ==================================================
-
-            return res.status(201).json({
-
-                success: true,
-
-                message:
-                    "Repayment created successfully.",
-
-                data:
-                    result.rows[0]
-
-            });
-
-        } catch (error) {
-
-            console.error(
-                "CREATE REPAYMENT ERROR:",
-                error
+        modal =
+            document.createElement(
+                "div"
             );
 
-            return res.status(500).json({
 
-                success: false,
+        modal.id =
+            "repaymentViewModal";
 
-                message:
-                    "Unable to create repayment record.",
 
-                error:
-                    process.env.NODE_ENV === "development"
-                        ? error.message
-                        : undefined
+        modal.innerHTML = `
 
-            });
-        }
+            <div
+                class="repayment-modal-overlay"
+                onclick="closeRepaymentModal(event)"
+            >
+
+                <div
+                    class="repayment-modal"
+                    onclick="event.stopPropagation()"
+                >
+
+                    <div
+                        class="repayment-modal-header"
+                    >
+
+                        <h2>
+                            Repayment Details
+                        </h2>
+
+                        <button
+                            type="button"
+                            onclick="closeRepaymentModal()"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        id="repaymentDetailsContent"
+                        class="repayment-details"
+                    >
+                    </div>
+
+
+                    <div
+                        class="repayment-modal-footer"
+                    >
+
+                        <button
+                            type="button"
+                            onclick="closeRepaymentModal()"
+                        >
+                            Close
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        document.body.appendChild(
+            modal
+        );
+
     }
-);
+
+
+    const content =
+        document.getElementById(
+            "repaymentDetailsContent"
+        );
+
+
+    if (!content) {
+
+        return;
+
+    }
+
+
+    content.innerHTML = `
+
+        <div class="detail-row">
+            <strong>Customer</strong>
+            <span>
+                ${escapeHtml(record.customer)}
+            </span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Loan Number</strong>
+            <span>
+                ${escapeHtml(record.loan_number)}
+            </span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Repayment Date</strong>
+            <span>
+                ${formatDate(record.repayment_date)}
+            </span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Amount</strong>
+            <span>
+                KES ${formatAmount(record.amount)}
+            </span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Payment Method</strong>
+            <span>
+                ${escapeHtml(record.payment_method)}
+            </span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Reference Number</strong>
+            <span>
+                ${escapeHtml(record.reference_number)}
+            </span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Receipt Number</strong>
+            <span>
+                ${escapeHtml(record.receipt_number)}
+            </span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Balance</strong>
+            <span>
+                KES ${formatAmount(record.balance)}
+            </span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Status</strong>
+            <span>
+                ${escapeHtml(record.status)}
+            </span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Financial Record ID</strong>
+            <span>
+                ${escapeHtml(record.financial_record_id)}
+            </span>
+        </div>
+
+    `;
+
+
+    modal.style.display =
+        "block";
+
+}
 
 
 // ============================================================
-// UPDATE REPAYMENT
-// PUT /api/repayments/:id
+// CLOSE MODAL
 // ============================================================
 
-router.put(
-    "/:id",
-    authenticateToken,
-    async (req, res) => {
+function closeRepaymentModal(event) {
 
-        try {
+    if (
+        event &&
+        event.target &&
+        event.target.id !==
+            "repaymentViewModal"
+    ) {
 
-            const {
-                id
-            } = req.params;
+        return;
 
+    }
 
-            // ==================================================
-            // CHECK RECORD
-            // ==================================================
 
-            const existing =
-                await db.query(
+    const modal =
+        document.getElementById(
+            "repaymentViewModal"
+        );
 
-                    `
 
-                    SELECT id
+    if (modal) {
 
-                    FROM public.repayments
+        modal.style.display =
+            "none";
 
-                    WHERE id = $1
+    }
 
-                    `,
+}
 
-                    [id]
-                );
 
+// ============================================================
+// EDIT REPAYMENT
+// ============================================================
 
-            if (
-                existing.rows.length === 0
-            ) {
+async function editRepayment(id) {
 
-                return res.status(404).json({
+    try {
 
-                    success: false,
-
-                    message:
-                        "Repayment record not found."
-
-                });
-            }
-
-
-            // ==================================================
-            // READ BODY
-            // ==================================================
-
-            const customer =
-                getBodyValue(
-                    req.body,
-                    "customer",
-                    "customer"
-                );
-
-
-            const loanNumber =
-                normalizeLoanNumber(
-                    getBodyValue(
-                        req.body,
-                        "loan_number",
-                        "loanNumber"
-                    )
-                );
-
-
-            const repaymentDate =
-                getBodyValue(
-                    req.body,
-                    "repayment_date",
-                    "repaymentDate"
-                );
-
-
-            const amount =
-                normalizeNumber(
-                    getBodyValue(
-                        req.body,
-                        "amount",
-                        "amount"
-                    )
-                );
-
-
-            const paymentMethod =
-                getBodyValue(
-                    req.body,
-                    "payment_method",
-                    "paymentMethod"
-                );
-
-
-            const referenceNumber =
-                getBodyValue(
-                    req.body,
-                    "reference_number",
-                    "referenceNumber"
-                );
-
-
-            const receiptNumber =
-                getBodyValue(
-                    req.body,
-                    "receipt_number",
-                    "receiptNumber"
-                );
-
-
-            const balance =
-                normalizeNumber(
-                    getBodyValue(
-                        req.body,
-                        "balance",
-                        "balance"
-                    )
-                );
-
-
-            const status =
-                normalizeStatus(
-                    getBodyValue(
-                        req.body,
-                        "status",
-                        "status"
-                    )
-                );
-
-
-            // ==================================================
-            // VALIDATION
-            // ==================================================
-
-            if (
-                !customer ||
-                String(customer).trim() === ""
-            ) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Customer is required."
-
-                });
-            }
-
-
-            if (!loanNumber) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Loan number is required."
-
-                });
-            }
-
-
-            if (!repaymentDate) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Repayment date is required."
-
-                });
-            }
-
-
-            if (amount <= 0) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Repayment amount must be greater than zero."
-
-                });
-            }
-
-
-            // ==================================================
-            // FIND FINANCIAL RECORD
-            // ==================================================
-
-            let financialRecordId =
-                null;
-
-
-            const financialResult =
-                await db.query(
-
-                    `
-
-                    SELECT id
-
-                    FROM public.financial_records
-
-                    WHERE TRIM(
-                        CAST(loan_number AS TEXT)
-                    ) = $1
-
-                    ORDER BY id DESC
-
-                    LIMIT 1
-
-                    `,
-
-                    [
-                        loanNumber
-                    ]
-                );
-
-
-            if (
-                financialResult.rows.length > 0
-            ) {
-
-                financialRecordId =
-                    financialResult
-                        .rows[0]
-                        .id;
-            }
-
-
-            // ==================================================
-            // UPDATE
-            // ==================================================
-
-            const result =
-                await db.query(
-
-                    `
-
-                    UPDATE public.repayments
-
-                    SET
-
-                        customer = $1,
-
-                        loan_number = $2,
-
-                        repayment_date = $3,
-
-                        amount = $4,
-
-                        payment_method = $5,
-
-                        reference_number = $6,
-
-                        receipt_number = $7,
-
-                        balance = $8,
-
-                        status = $9,
-
-                        financial_record_id = $10,
-
-                        updated_at =
-                            CURRENT_TIMESTAMP
-
-                    WHERE id = $11
-
-                    RETURNING
-
-                        id,
-
-                        customer,
-
-                        loan_number,
-
-                        repayment_date,
-
-                        amount,
-
-                        payment_method,
-
-                        reference_number,
-
-                        receipt_number,
-
-                        balance,
-
-                        status,
-
-                        financial_record_id,
-
-                        created_at,
-
-                        updated_at
-
-                    `,
-
-                    [
-
-                        String(customer).trim(),
-
-                        loanNumber,
-
-                        repaymentDate,
-
-                        amount,
-
-                        paymentMethod
-                            ? String(paymentMethod).trim()
-                            : null,
-
-                        referenceNumber
-                            ? String(referenceNumber).trim()
-                            : null,
-
-                        receiptNumber
-                            ? String(receiptNumber).trim()
-                            : null,
-
-                        balance,
-
-                        status,
-
-                        financialRecordId,
-
-                        id
-
-                    ]
-                );
-
-
-            return res.status(200).json({
-
-                success: true,
-
-                message:
-                    "Repayment updated successfully.",
-
-                data:
-                    result.rows[0]
-
-            });
-
-        } catch (error) {
-
-            console.error(
-                "UPDATE REPAYMENT ERROR:",
-                error
+        const data =
+            await apiRequest(
+                `${REPAYMENTS_API}/${id}`
             );
 
-            return res.status(500).json({
 
-                success: false,
+        if (!data.success) {
 
-                message:
-                    "Unable to update repayment record.",
+            throw new Error(
+                data.message ||
+                "Unable to load repayment."
+            );
 
-                error:
-                    process.env.NODE_ENV === "development"
-                        ? error.message
-                        : undefined
-
-            });
         }
+
+
+        showEditForm(
+            data.data
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "EDIT REPAYMENT ERROR:",
+            error
+        );
+
+
+        showError(
+            error.message
+        );
+
     }
-);
+
+}
+
+
+// ============================================================
+// SHOW EDIT FORM
+// ============================================================
+
+function showEditForm(record) {
+
+    let modal =
+        document.getElementById(
+            "repaymentEditModal"
+        );
+
+
+    if (!modal) {
+
+        modal =
+            document.createElement(
+                "div"
+            );
+
+
+        modal.id =
+            "repaymentEditModal";
+
+
+        modal.innerHTML = `
+
+            <div
+                class="repayment-modal-overlay"
+                onclick="closeEditModal(event)"
+            >
+
+                <div
+                    class="repayment-modal"
+                    onclick="event.stopPropagation()"
+                >
+
+                    <div
+                        class="repayment-modal-header"
+                    >
+
+                        <h2>
+                            Edit Repayment
+                        </h2>
+
+                        <button
+                            type="button"
+                            onclick="closeEditModal()"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+
+                    <form
+                        id="editRepaymentForm"
+                    >
+
+                        <input
+                            type="hidden"
+                            id="editRepaymentId"
+                        >
+
+
+                        <label>
+                            Customer
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editCustomer"
+                            required
+                        >
+
+
+                        <label>
+                            Loan Number
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editLoanNumber"
+                            required
+                        >
+
+
+                        <label>
+                            Repayment Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="editRepaymentDate"
+                            required
+                        >
+
+
+                        <label>
+                            Amount
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            id="editAmount"
+                            required
+                        >
+
+
+                        <label>
+                            Payment Method
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editPaymentMethod"
+                        >
+
+
+                        <label>
+                            Reference Number
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editReferenceNumber"
+                        >
+
+
+                        <label>
+                            Receipt Number
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editReceiptNumber"
+                        >
+
+
+                        <label>
+                            Balance
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            id="editBalance"
+                        >
+
+
+                        <label>
+                            Status
+                        </label>
+
+                        <select
+                            id="editStatus"
+                        >
+
+                            <option value="Verified">
+                                Verified
+                            </option>
+
+                            <option value="Unverified">
+                                Unverified
+                            </option>
+
+                        </select>
+
+
+                        <div
+                            class="repayment-modal-footer"
+                        >
+
+                            <button
+                                type="submit"
+                            >
+                                Save Changes
+                            </button>
+
+                            <button
+                                type="button"
+                                onclick="closeEditModal()"
+                            >
+                                Cancel
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        document.body.appendChild(
+            modal
+        );
+
+
+        document
+            .getElementById(
+                "editRepaymentForm"
+            )
+            .addEventListener(
+                "submit",
+                submitEditRepayment
+            );
+
+    }
+
+
+    document.getElementById(
+        "editRepaymentId"
+    ).value = record.id;
+
+
+    document.getElementById(
+        "editCustomer"
+    ).value =
+        record.customer || "";
+
+
+    document.getElementById(
+        "editLoanNumber"
+    ).value =
+        record.loan_number || "";
+
+
+    document.getElementById(
+        "editRepaymentDate"
+    ).value =
+        formatDateForInput(
+            record.repayment_date
+        );
+
+
+    document.getElementById(
+        "editAmount"
+    ).value =
+        record.amount || 0;
+
+
+    document.getElementById(
+        "editPaymentMethod"
+    ).value =
+        record.payment_method || "";
+
+
+    document.getElementById(
+        "editReferenceNumber"
+    ).value =
+        record.reference_number || "";
+
+
+    document.getElementById(
+        "editReceiptNumber"
+    ).value =
+        record.receipt_number || "";
+
+
+    document.getElementById(
+        "editBalance"
+    ).value =
+        record.balance || 0;
+
+
+    document.getElementById(
+        "editStatus"
+    ).value =
+        record.status || "Unverified";
+
+
+    modal.style.display =
+        "block";
+
+}
+
+
+// ============================================================
+// FORMAT DATE FOR INPUT
+// ============================================================
+
+function formatDateForInput(value) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return String(value)
+            .substring(0, 10);
+
+    }
+
+
+    return date
+        .toISOString()
+        .substring(0, 10);
+
+}
+
+
+// ============================================================
+// SUBMIT EDIT
+// ============================================================
+
+async function submitEditRepayment(event) {
+
+    event.preventDefault();
+
+
+    const id =
+        document.getElementById(
+            "editRepaymentId"
+        ).value;
+
+
+    const body = {
+
+        customer:
+            document.getElementById(
+                "editCustomer"
+            ).value.trim(),
+
+        loan_number:
+            document.getElementById(
+                "editLoanNumber"
+            ).value.trim(),
+
+        repayment_date:
+            document.getElementById(
+                "editRepaymentDate"
+            ).value,
+
+        amount:
+            document.getElementById(
+                "editAmount"
+            ).value,
+
+        payment_method:
+            document.getElementById(
+                "editPaymentMethod"
+            ).value.trim(),
+
+        reference_number:
+            document.getElementById(
+                "editReferenceNumber"
+            ).value.trim(),
+
+        receipt_number:
+            document.getElementById(
+                "editReceiptNumber"
+            ).value.trim(),
+
+        balance:
+            document.getElementById(
+                "editBalance"
+            ).value,
+
+        status:
+            document.getElementById(
+                "editStatus"
+            ).value
+
+    };
+
+
+    try {
+
+        const data =
+            await apiRequest(
+                `${REPAYMENTS_API}/${id}`,
+                {
+                    method: "PUT",
+
+                    body:
+                        JSON.stringify(body)
+                }
+            );
+
+
+        if (!data.success) {
+
+            throw new Error(
+                data.message ||
+                "Unable to update repayment."
+            );
+
+        }
+
+
+        closeEditModal();
+
+
+        showSuccess(
+            "Repayment updated successfully."
+        );
+
+
+        await loadRepayments();
+
+
+    } catch (error) {
+
+        console.error(
+            "UPDATE REPAYMENT ERROR:",
+            error
+        );
+
+
+        showError(
+            error.message
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// CLOSE EDIT MODAL
+// ============================================================
+
+function closeEditModal(event) {
+
+    if (
+        event &&
+        event.target &&
+        event.target.id !==
+            "repaymentEditModal"
+    ) {
+
+        return;
+
+    }
+
+
+    const modal =
+        document.getElementById(
+            "repaymentEditModal"
+        );
+
+
+    if (modal) {
+
+        modal.style.display =
+            "none";
+
+    }
+
+}
 
 
 // ============================================================
 // DELETE REPAYMENT
-// DELETE /api/repayments/:id
 // ============================================================
 
-router.delete(
-    "/:id",
-    authenticateToken,
-    async (req, res) => {
+async function deleteRepayment(id) {
 
-        try {
-
-            const {
-                id
-            } = req.params;
+    const confirmed =
+        window.confirm(
+            "Are you sure you want to delete this repayment record?"
+        );
 
 
-            // ==================================================
-            // CHECK RECORD
-            // ==================================================
+    if (!confirmed) {
 
-            const existing =
-                await db.query(
+        return;
 
-                    `
+    }
 
-                    SELECT id
 
-                    FROM public.repayments
+    try {
 
-                    WHERE id = $1
+        const data =
+            await apiRequest(
+                `${REPAYMENTS_API}/${id}`,
+                {
+                    method: "DELETE"
+                }
+            );
 
-                    `,
 
-                    [id]
-                );
+        if (!data.success) {
+
+            throw new Error(
+                data.message ||
+                "Unable to delete repayment."
+            );
+
+        }
+
+
+        showSuccess(
+            "Repayment deleted successfully."
+        );
+
+
+        // If deleting the last record
+        // on a page, move back one page.
+
+        if (
+            currentPage > 1
+        ) {
+
+            const tbody =
+                findRepaymentTableBody();
 
 
             if (
-                existing.rows.length === 0
+                tbody &&
+                tbody.children.length === 1
             ) {
 
-                return res.status(404).json({
+                currentPage--;
 
-                    success: false,
+            }
 
-                    message:
-                        "Repayment record not found."
+        }
 
-                });
+
+        await loadRepayments();
+
+
+    } catch (error) {
+
+        console.error(
+            "DELETE REPAYMENT ERROR:",
+            error
+        );
+
+
+        showError(
+            error.message
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// SEARCH AND FILTERS
+// ============================================================
+
+function setupSearchAndFilters() {
+
+    const elements =
+        document.querySelectorAll(
+            `
+            input,
+            select
+            `
+        );
+
+
+    elements.forEach(
+        function (element) {
+
+            const id =
+                element.id || "";
+
+
+            const repaymentField =
+                /customer|loan|reference|receipt|amount|payment|method|date/i
+                    .test(id);
+
+
+            if (!repaymentField) {
+
+                return;
+
             }
 
 
-            // ==================================================
-            // DELETE
-            // ==================================================
+            element.addEventListener(
+                "change",
+                function () {
 
-            await db.query(
+                    currentPage = 1;
 
-                `
+                    loadRepayments();
 
-                DELETE FROM public.repayments
-
-                WHERE id = $1
-
-                `,
-
-                [id]
+                }
             );
 
 
-            // ==================================================
-            // RESPONSE
-            // ==================================================
+            if (
+                element.tagName
+                    .toLowerCase() ===
+                "input"
+            ) {
 
-            return res.status(200).json({
+                let timer;
 
-                success: true,
 
-                message:
-                    "Repayment deleted successfully."
+                element.addEventListener(
+                    "input",
+                    function () {
 
-            });
+                        clearTimeout(timer);
 
-        } catch (error) {
 
-            console.error(
-                "DELETE REPAYMENT ERROR:",
-                error
-            );
+                        timer =
+                            setTimeout(
+                                function () {
 
-            return res.status(500).json({
+                                    currentPage = 1;
 
-                success: false,
+                                    loadRepayments();
 
-                message:
-                    "Unable to delete repayment record.",
+                                },
+                                400
+                            );
 
-                error:
-                    process.env.NODE_ENV === "development"
-                        ? error.message
-                        : undefined
+                    }
+                );
 
-            });
+            }
+
         }
+    );
+
+}
+
+
+// ============================================================
+// RESET FILTERS
+// ============================================================
+
+function resetRepaymentFilters() {
+
+    const possibleIds = [
+
+        "customerSearch",
+        "customer",
+        "searchCustomer",
+
+        "loanNumberSearch",
+        "loanNumber",
+        "searchLoanNumber",
+
+        "referenceNumberSearch",
+        "referenceNumber",
+        "searchReferenceNumber",
+
+        "receiptNumberSearch",
+        "receiptNumber",
+        "searchReceiptNumber",
+
+        "amountSearch",
+        "amount",
+
+        "paymentMethod",
+        "paymentMethodFilter",
+        "method",
+
+        "dateFrom",
+        "startDate",
+        "repaymentDateFrom",
+
+        "dateTo",
+        "endDate",
+        "repaymentDateTo"
+
+    ];
+
+
+    possibleIds.forEach(
+        function (id) {
+
+            const element =
+                document.getElementById(id);
+
+
+            if (element) {
+
+                element.value = "";
+
+            }
+
+        }
+    );
+
+
+    currentPage = 1;
+
+    loadRepayments();
+
+}
+
+
+// ============================================================
+// PAGINATION BUTTONS
+// ============================================================
+
+function setupPaginationButtons() {
+
+    const previousButtons =
+        document.querySelectorAll(
+            "#previousPage, #prevPage, #previousBtn, #prevBtn"
+        );
+
+
+    const nextButtons =
+        document.querySelectorAll(
+            "#nextPage, #nextBtn, #nextButton"
+        );
+
+
+    previousButtons.forEach(
+        function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    if (
+                        currentPage <= 1
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    currentPage--;
+
+                    loadRepayments();
+
+                }
+            );
+
+        }
+    );
+
+
+    nextButtons.forEach(
+        function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    if (
+                        currentPage >=
+                        totalPages
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    currentPage++;
+
+                    loadRepayments();
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// UPDATE PAGINATION
+// ============================================================
+
+function updatePagination(
+    pagination
+) {
+
+    if (!pagination) {
+
+        totalPages = 1;
+
+        return;
+
     }
-);
 
 
+    currentPage =
+        Number(
+            pagination.page
+        ) || 1;
+
+
+    totalPages =
+        Number(
+            pagination.totalPages
+        ) || 1;
+
+
+    const previousButtons =
+        document.querySelectorAll(
+            "#previousPage, #prevPage, #previousBtn, #prevBtn"
+        );
+
+
+    const nextButtons =
+        document.querySelectorAll(
+            "#nextPage, #nextBtn, #nextButton"
+        );
+
+
+    previousButtons.forEach(
+        function (button) {
+
+            button.disabled =
+                !pagination.hasPreviousPage;
+
+        }
+    );
+
+
+    nextButtons.forEach(
+        function (button) {
+
+            button.disabled =
+                !pagination.hasNextPage;
+
+        }
+    );
+
+
+    const pageElements =
+        document.querySelectorAll(
+            "#currentPage, #pageNumber, #pageInfo"
+        );
+
+
+    pageElements.forEach(
+        function (element) {
+
+            element.textContent =
+                `Page ${currentPage} of ${totalPages}`;
+
+        }
+    );
+
+
+    const totalElements =
+        document.querySelectorAll(
+            "#totalPages"
+        );
+
+
+    totalElements.forEach(
+        function (element) {
+
+            element.textContent =
+                totalPages;
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// UPDATE RECORD COUNT
+// ============================================================
+
+function updateRecordCount(
+    pagination,
+    records
+) {
+
+    const elements =
+        document.querySelectorAll(
+            "#recordCount, #totalRecords, #repaymentCount"
+        );
+
+
+    elements.forEach(
+        function (element) {
+
+            if (
+                pagination &&
+                pagination.total !== undefined
+            ) {
+
+                element.textContent =
+                    Number(
+                        pagination.total
+                    ).toLocaleString();
+
+            } else {
+
+                element.textContent =
+                    records.length;
+
+            }
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// LOADING STATE
+// ============================================================
+
+function showLoading() {
+
+    const tbody =
+        findRepaymentTableBody();
+
+
+    if (!tbody) {
+
+        return;
+
+    }
+
+
+    tbody.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="11"
+                style="text-align:center;"
+            >
+
+                Loading repayment records...
+
+            </td>
+
+        </tr>
+
+    `;
+
+}
+
+
+// ============================================================
+// HIDE LOADING
+// ============================================================
+
+function hideLoading() {
+
+    // Table is replaced by renderRepayments().
+    // This function is intentionally kept
+    // for future loading indicators.
+
+}
+
+
+// ============================================================
+// SUCCESS MESSAGE
+// ============================================================
+
+function showSuccess(message) {
+
+    showMessage(
+        message,
+        "success"
+    );
+
+}
+
+
+// ============================================================
+// ERROR MESSAGE
+// ============================================================
+
+function showError(message) {
+
+    showMessage(
+        message,
+        "error"
+    );
+
+}
+
+
+// ============================================================
+// SHOW MESSAGE
+// ============================================================
+
+function showMessage(
+    message,
+    type
+) {
+
+    let element =
+        document.getElementById(
+            "repaymentMessage"
+        );
+
+
+    if (!element) {
+
+        element =
+            document.createElement(
+                "div"
+            );
+
+
+        element.id =
+            "repaymentMessage";
+
+
+        element.style.position =
+            "fixed";
+
+        element.style.top =
+            "20px";
+
+        element.style.right =
+            "20px";
+
+        element.style.zIndex =
+            "99999";
+
+        element.style.padding =
+            "12px 18px";
+
+        element.style.borderRadius =
+            "6px";
+
+        element.style.background =
+            type === "error"
+                ? "#dc3545"
+                : "#198754";
+
+        element.style.color =
+            "#ffffff";
+
+        element.style.fontWeight =
+            "600";
+
+
+        document.body.appendChild(
+            element
+        );
+
+    }
+
+
+    element.textContent =
+        message;
+
+
+    element.style.display =
+        "block";
+
+
+    setTimeout(
+        function () {
+
+            element.style.display =
+                "none";
+
+        },
+        4000
+    );
+
+}
+
+
+// ============================================================
+// EXPORT FUNCTIONS
+//
+// Makes functions available to HTML onclick handlers.
+// ============================================================
+
+window.loadRepayments =
+    loadRepayments;
+
+window.viewRepayment =
+    viewRepayment;
+
+window.editRepayment =
+    editRepayment;
+
+window.deleteRepayment =
+    deleteRepayment;
+
+window.closeRepaymentModal =
+    closeRepaymentModal;
+
+window.closeEditModal =
+    closeEditModal;
+
+window.resetRepaymentFilters =
+    resetRepaymentFilters;
+```
