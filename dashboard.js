@@ -1,92 +1,281 @@
+"use strict";
+
+// ============================================================
+// FINANCE DATE RECOVERY TOOL
+// DASHBOARD
 // dashboard.js
+// ============================================================
 
 async function loadDashboard() {
-    try {
-        const data = await apiGet("dashboard");
 
-        if (!data.success) {
-            console.log(data.message);
+    try {
+
+        // ----------------------------------------------------
+        // MAKE SURE USER IS LOGGED IN
+        // ----------------------------------------------------
+
+        if (!requireAuthentication()) {
             return;
         }
 
-        // Statistics
+
+        // ----------------------------------------------------
+        // LOAD DASHBOARD DATA
+        // ----------------------------------------------------
+
+        const data = await apiGet("dashboard");
+
+
+        // ----------------------------------------------------
+        // API ERROR
+        // ----------------------------------------------------
+
+        if (!data.success) {
+
+            showError(
+                data.message || "Unable to load dashboard.",
+                "Dashboard Error"
+            );
+
+            return;
+        }
+
+
+        // ----------------------------------------------------
+        // STATISTICS
+        // ----------------------------------------------------
+
         document.getElementById("totalRecords").textContent =
-            data.data.totalRecords;
+            data.data.totalRecords ?? 0;
 
         document.getElementById("uploadedFiles").textContent =
-            data.data.uploadedFiles;
+            data.data.uploadedFiles ?? 0;
 
         document.getElementById("recoveredRecords").textContent =
-            data.data.recoveredRecords;
+            data.data.recoveredRecords ?? 0;
 
         document.getElementById("pendingRecords").textContent =
-            data.data.pendingRecords;
+            data.data.pendingRecords ?? 0;
 
 
-        // Recent uploads
-        const uploads = document.getElementById("recentUploads");
+        // ----------------------------------------------------
+        // RECENT UPLOADS
+        // ----------------------------------------------------
 
-        if (data.data.recentUploads.length > 0) {
+        const uploads =
+            document.getElementById("recentUploads");
+
+        if (uploads) {
 
             uploads.innerHTML = "";
 
-            data.data.recentUploads.forEach(file => {
+            if (
+                data.data.recentUploads &&
+                data.data.recentUploads.length > 0
+            ) {
 
-                uploads.innerHTML += `
+                data.data.recentUploads.forEach(file => {
+
+                    uploads.innerHTML += `
+                        <tr>
+                            <td>${escapeHtml(
+                                file.file_name || ""
+                            )}</td>
+
+                            <td>${file.records ?? 0}</td>
+
+                            <td>${escapeHtml(
+                                file.date || "—"
+                            )}</td>
+
+                            <td>${escapeHtml(
+                                file.status || "—"
+                            )}</td>
+                        </tr>
+                    `;
+
+                });
+
+            } else {
+
+                uploads.innerHTML = `
                     <tr>
-                        <td>${file.file_name}</td>
-                        <td>${file.records}</td>
-                        <td>${file.date}</td>
-                        <td>${file.status}</td>
+                        <td colspan="4">
+                            No recent uploads found.
+                        </td>
                     </tr>
                 `;
 
-            });
-
+            }
         }
 
 
-        // Recent searches
-        const searches = document.getElementById("recentSearches");
+        // ----------------------------------------------------
+        // RECENT SEARCHES
+        // ----------------------------------------------------
 
-        if (data.data.recentSearches.length > 0) {
+        const searches =
+            document.getElementById("recentSearches");
+
+        if (searches) {
 
             searches.innerHTML = "";
 
-            data.data.recentSearches.forEach(search => {
+            if (
+                data.data.recentSearches &&
+                data.data.recentSearches.length > 0
+            ) {
 
-                searches.innerHTML += `
+                data.data.recentSearches.forEach(search => {
+
+                    searches.innerHTML += `
+                        <tr>
+
+                            <td>${escapeHtml(
+                                search.search_term || "—"
+                            )}</td>
+
+                            <td>${escapeHtml(
+                                search.user || "Unknown"
+                            )}</td>
+
+                            <td>${escapeHtml(
+                                search.date || "—"
+                            )}</td>
+
+                            <td>${escapeHtml(
+                                search.result || "—"
+                            )}</td>
+
+                        </tr>
+                    `;
+
+                });
+
+            } else {
+
+                searches.innerHTML = `
                     <tr>
-                        <td>${search.search}</td>
-                        <td>${search.user}</td>
-                        <td>${search.date}</td>
-                        <td>${search.result}</td>
+                        <td colspan="4">
+                            No recent searches found.
+                        </td>
                     </tr>
                 `;
 
-            });
-
+            }
         }
 
 
-        // API status
-        document.getElementById("apiStatus").textContent =
-            "Connected";
+        // ----------------------------------------------------
+        // API STATUS
+        // ----------------------------------------------------
 
-        document.getElementById("databaseStatus").textContent =
-            "Connected";
+        const apiStatus =
+            document.getElementById("apiStatus");
+
+        if (apiStatus) {
+            apiStatus.textContent = "Connected";
+        }
+
+
+        // ----------------------------------------------------
+        // DATABASE STATUS
+        // ----------------------------------------------------
+
+        const databaseStatus =
+            document.getElementById("databaseStatus");
+
+        if (databaseStatus) {
+            databaseStatus.textContent = "Connected";
+        }
+
+
+        // ----------------------------------------------------
+        // SUCCESS NOTIFICATION
+        // ----------------------------------------------------
+
+        console.log(
+            "Dashboard loaded successfully.",
+            data
+        );
+
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Dashboard loading error:",
+            error
+        );
 
-        document.getElementById("apiStatus").textContent =
-            "Disconnected";
 
-        document.getElementById("databaseStatus").textContent =
-            "Unavailable";
+        // ----------------------------------------------------
+        // API STATUS
+        // ----------------------------------------------------
+
+        const apiStatus =
+            document.getElementById("apiStatus");
+
+        if (apiStatus) {
+            apiStatus.textContent = "Disconnected";
+        }
+
+
+        // ----------------------------------------------------
+        // DATABASE STATUS
+        // ----------------------------------------------------
+
+        const databaseStatus =
+            document.getElementById("databaseStatus");
+
+        if (databaseStatus) {
+            databaseStatus.textContent = "Unavailable";
+        }
+
+
+        // ----------------------------------------------------
+        // SHOW ERROR
+        // ----------------------------------------------------
+
+        showError(
+            error.message ||
+            "Unable to load dashboard data.",
+            "Dashboard Error"
+        );
+
+
+        // ----------------------------------------------------
+        // TOKEN PROBLEM
+        // ----------------------------------------------------
+
+        if (
+            error.status === 401 ||
+            error.status === 403
+        ) {
+
+            removeAuthToken();
+            removeCurrentUser();
+
+            setTimeout(() => {
+
+                window.location.href =
+                    "index.html";
+
+            }, 1500);
+        }
+
     }
 }
 
 
-loadDashboard();
+// ============================================================
+// LOAD DASHBOARD
+// ============================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        loadDashboard();
+
+    }
+);
