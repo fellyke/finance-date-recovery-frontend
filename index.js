@@ -7,6 +7,7 @@
 
 const loginForm = document.getElementById("loginForm");
 const errorMessage = document.getElementById("errorMessage");
+const loginButton = document.getElementById("loginButton");
 
 
 // ============================================================
@@ -42,6 +43,14 @@ loginForm.addEventListener("submit", async function (e) {
 
         return;
     }
+
+
+    // --------------------------------------------------------
+    // SHOW LOADING
+    // --------------------------------------------------------
+
+    loginButton.disabled = true;
+    loginButton.textContent = "Loading...";
 
 
     // --------------------------------------------------------
@@ -96,6 +105,10 @@ loginForm.addEventListener("submit", async function (e) {
                 errorMessage.textContent =
                     "Login succeeded, but the server did not return an authorization token.";
 
+                // Restore button
+                loginButton.disabled = false;
+                loginButton.textContent = "Login";
+
                 return;
             }
 
@@ -139,6 +152,10 @@ loginForm.addEventListener("submit", async function (e) {
 
             errorMessage.textContent =
                 data.message || "Invalid username or password.";
+
+            // Restore button
+            loginButton.disabled = false;
+            loginButton.textContent = "Login";
         }
 
 
@@ -151,6 +168,10 @@ loginForm.addEventListener("submit", async function (e) {
 
         errorMessage.textContent =
             "Unable to connect to the server.";
+
+        // Restore button
+        loginButton.disabled = false;
+        loginButton.textContent = "Login";
     }
 
 });
