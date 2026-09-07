@@ -71,12 +71,80 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ========================================================
-    // GET JWT TOKEN
+    // GET AUTHENTICATION TOKEN
+    // ========================================================
+    // Uses the same authentication system as script.js
+    // Token key:
+    //
+    // financeRecovery_token
+    //
     // ========================================================
 
     function getToken() {
 
-        const keys = [
+        // ----------------------------------------------------
+        // PRIMARY AUTHENTICATION SYSTEM
+        // ----------------------------------------------------
+
+        if (
+            window.FinanceRecovery &&
+            typeof window.FinanceRecovery.getAuthToken ===
+                "function"
+        ) {
+
+            const token =
+                window.FinanceRecovery.getAuthToken();
+
+            if (token) {
+
+                return token;
+
+            }
+
+        }
+
+
+        // ----------------------------------------------------
+        // DIRECT LOCAL STORAGE FALLBACK
+        // ----------------------------------------------------
+
+        const localToken =
+            localStorage.getItem(
+                "financeRecovery_token"
+            );
+
+
+        if (localToken) {
+
+            return localToken;
+
+        }
+
+
+        // ----------------------------------------------------
+        // SESSION STORAGE FALLBACK
+        // ----------------------------------------------------
+
+        const sessionToken =
+            sessionStorage.getItem(
+                "financeRecovery_token"
+            );
+
+
+        if (sessionToken) {
+
+            return sessionToken;
+
+        }
+
+
+        // ----------------------------------------------------
+        // OLD TOKEN KEYS
+        // ----------------------------------------------------
+        // Kept as a compatibility fallback.
+        // ----------------------------------------------------
+
+        const oldKeys = [
             "token",
             "authToken",
             "jwtToken",
@@ -84,11 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ];
 
 
-        // ----------------------------------------------------
-        // LOCAL STORAGE
-        // ----------------------------------------------------
-
-        for (const key of keys) {
+        for (const key of oldKeys) {
 
             const token =
                 localStorage.getItem(key);
@@ -102,11 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        // ----------------------------------------------------
-        // SESSION STORAGE
-        // ----------------------------------------------------
-
-        for (const key of keys) {
+        for (const key of oldKeys) {
 
             const token =
                 sessionStorage.getItem(key);
@@ -180,11 +240,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             // ------------------------------------------------
-            // READ JSON
+            // READ RESPONSE
             // ------------------------------------------------
 
-            const result =
-                await response.json();
+            let result;
+
+            try {
+
+                result =
+                    await response.json();
+
+            } catch (jsonError) {
+
+                throw new Error(
+                    "The Recovery History API returned an invalid response."
+                );
+
+            }
 
 
             console.log(
@@ -200,6 +272,31 @@ document.addEventListener("DOMContentLoaded", function () {
             if (
                 response.status === 401
             ) {
+
+                // Remove invalid token from the shared system
+
+                if (
+                    window.FinanceRecovery &&
+                    typeof window.FinanceRecovery
+                        .removeAuthToken ===
+                        "function"
+                ) {
+
+                    window.FinanceRecovery
+                        .removeAuthToken();
+
+                } else {
+
+                    localStorage.removeItem(
+                        "financeRecovery_token"
+                    );
+
+                    sessionStorage.removeItem(
+                        "financeRecovery_token"
+                    );
+
+                }
+
 
                 throw new Error(
                     "Your login session has expired. Please login again."
@@ -490,6 +587,7 @@ document.addEventListener("DOMContentLoaded", function () {
             addCell(
                 row,
                 record.transaction_reference ||
+                record.transactionReference ||
                 "—"
             );
 
@@ -554,7 +652,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        // API already returns YYYY-MM-DD
+        // ----------------------------------------------------
+        // API RETURNS YYYY-MM-DD
+        // ----------------------------------------------------
+
         if (
             typeof value === "string" &&
             /^\d{4}-\d{2}-\d{2}$/.test(value)
@@ -574,6 +675,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
 
+
+        // ----------------------------------------------------
+        // TRY DATE OBJECT
+        // ----------------------------------------------------
 
         const date =
             new Date(value);
@@ -615,7 +720,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        // API already returns HH:MM:SS
+        // ----------------------------------------------------
+        // API RETURNS HH:MM:SS
+        // ----------------------------------------------------
+
         if (
             typeof value === "string" &&
             /^\d{1,2}:\d{2}:\d{2}$/.test(value)
@@ -625,6 +733,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
 
+
+        // ----------------------------------------------------
+        // TRY DATE OBJECT
+        // ----------------------------------------------------
 
         const date =
             new Date(value);
@@ -702,7 +814,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ========================================================
-    // SEARCH
+    // SEARCH SETUP
     // ========================================================
 
     function setupSearch() {
@@ -713,6 +825,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
 
+
+        // ----------------------------------------------------
+        // LIVE SEARCH
+        // ----------------------------------------------------
 
         historySearch.addEventListener(
             "input",
@@ -725,6 +841,10 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         );
 
+
+        // ----------------------------------------------------
+        // SEARCH BUTTON
+        // ----------------------------------------------------
 
         if (searchButton) {
 
@@ -743,6 +863,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
 
+
+        // ----------------------------------------------------
+        // ENTER KEY
+        // ----------------------------------------------------
 
         historySearch.addEventListener(
             "keydown",
@@ -794,7 +918,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         // ----------------------------------------------------
-        // FILTER
+        // FILTER RECORDS
         // ----------------------------------------------------
 
         const filtered =
@@ -816,6 +940,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         record.loan_number,
 
                         record.transaction_reference,
+
+                        record.transactionReference,
 
                         record.result,
 
@@ -842,7 +968,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         // ----------------------------------------------------
-        // DISPLAY
+        // NO SEARCH RESULTS
         // ----------------------------------------------------
 
         if (
@@ -857,6 +983,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
 
+
+        // ----------------------------------------------------
+        // DISPLAY RESULTS
+        // ----------------------------------------------------
 
         displayHistory(
             filtered
@@ -1012,4 +1142,3 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
 });
-
