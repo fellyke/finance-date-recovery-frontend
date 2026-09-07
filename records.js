@@ -3,29 +3,34 @@
 // RECORDS.JS
 // ============================================================
 
+"use strict";
+
 document.addEventListener("DOMContentLoaded", function () {
-
-    // --------------------------------------------------------
-    // API CONFIGURATION
-    // --------------------------------------------------------
-
-    const API_URL = "https://finance-date-recovery-backend.onrender.com/api/records";
-
 
     // --------------------------------------------------------
     // ELEMENTS
     // --------------------------------------------------------
 
-    const recordSearch = document.getElementById("recordSearch");
-    const statusFilter = document.getElementById("statusFilter");
-    const recordsBody = document.getElementById("recordsBody");
-    const recordsTable = document.getElementById("recordsTable");
-    const recordCount = document.getElementById("recordCount");
-    const emptyState = document.querySelector(".empty-state");
+    const recordSearch =
+        document.getElementById("recordSearch");
 
-    const searchButton = document.querySelector(
-        ".search-box .btn"
-    );
+    const statusFilter =
+        document.getElementById("statusFilter");
+
+    const recordsBody =
+        document.getElementById("recordsBody");
+
+    const recordsTable =
+        document.getElementById("recordsTable");
+
+    const recordCount =
+        document.getElementById("recordCount");
+
+    const emptyState =
+        document.querySelector(".empty-state");
+
+    const searchButton =
+        document.querySelector(".search-box .btn");
 
 
     // --------------------------------------------------------
@@ -33,6 +38,15 @@ document.addEventListener("DOMContentLoaded", function () {
     // --------------------------------------------------------
 
     let allRecords = [];
+
+
+    // --------------------------------------------------------
+    // CHECK AUTHENTICATION
+    // --------------------------------------------------------
+
+    if (!requireAuthentication()) {
+        return;
+    }
 
 
     // --------------------------------------------------------
@@ -48,9 +62,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (searchButton) {
 
-        searchButton.addEventListener("click", function () {
-            filterRecords();
-        });
+        searchButton.addEventListener(
+            "click",
+            function () {
+                filterRecords();
+            }
+        );
 
     }
 
@@ -61,9 +78,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (recordSearch) {
 
-        recordSearch.addEventListener("input", function () {
-            filterRecords();
-        });
+        recordSearch.addEventListener(
+            "input",
+            function () {
+                filterRecords();
+            }
+        );
 
     }
 
@@ -74,16 +94,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (statusFilter) {
 
-        statusFilter.addEventListener("change", function () {
-            filterRecords();
-        });
+        statusFilter.addEventListener(
+            "change",
+            function () {
+                filterRecords();
+            }
+        );
 
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // LOAD RECORDS FROM API
-    // --------------------------------------------------------
+    // ========================================================
 
     async function loadRecords() {
 
@@ -92,29 +115,24 @@ document.addEventListener("DOMContentLoaded", function () {
             showLoading();
 
 
-            const response = await fetch(API_URL);
+            // ------------------------------------------------
+            // IMPORTANT
+            // apiGet() automatically sends the JWT token.
+            // ------------------------------------------------
 
-
-            if (!response.ok) {
-
-                throw new Error(
-                    `Server returned status ${response.status}`
-                );
-
-            }
-
-
-            const result = await response.json();
+            const result =
+                await apiGet("records");
 
 
             // ------------------------------------------------
             // CHECK API RESPONSE
             // ------------------------------------------------
 
-            if (!result.success) {
+            if (!result || !result.success) {
 
                 throw new Error(
-                    result.message || "Failed to load records."
+                    result?.message ||
+                    "Failed to load financial records."
                 );
 
             }
@@ -124,9 +142,10 @@ document.addEventListener("DOMContentLoaded", function () {
             // GET RECORD DATA
             // ------------------------------------------------
 
-            allRecords = Array.isArray(result.data)
-                ? result.data
-                : [];
+            allRecords =
+                Array.isArray(result.data)
+                    ? result.data
+                    : [];
 
 
             // ------------------------------------------------
@@ -136,6 +155,12 @@ document.addEventListener("DOMContentLoaded", function () {
             displayRecords(allRecords);
 
 
+            console.log(
+                "Financial records loaded successfully:",
+                allRecords
+            );
+
+
         } catch (error) {
 
             console.error(
@@ -143,9 +168,38 @@ document.addEventListener("DOMContentLoaded", function () {
                 error
             );
 
+
+            // ------------------------------------------------
+            // HANDLE AUTHENTICATION ERROR
+            // ------------------------------------------------
+
+            if (
+                error.status === 401 ||
+                error.status === 403
+            ) {
+
+                removeAuthToken();
+                removeCurrentUser();
+
+                showError(
+                    "Your login session has expired. Please log in again."
+                );
+
+                setTimeout(function () {
+                    window.location.href = "index.html";
+                }, 1500);
+
+                return;
+            }
+
+
+            // ------------------------------------------------
+            // SHOW ACTUAL ERROR
+            // ------------------------------------------------
+
             showError(
-                "Unable to load financial records. " +
-                "Make sure the Node.js server is running."
+                error.message ||
+                "Unable to load financial records."
             );
 
         }
@@ -153,11 +207,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // DISPLAY RECORDS
-    // --------------------------------------------------------
+    // ========================================================
 
     function displayRecords(records) {
+
+        if (!recordsBody) {
+            return;
+        }
+
 
         recordsBody.innerHTML = "";
 
@@ -168,16 +227,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!records || records.length === 0) {
 
-            recordsTable.style.display = "none";
+            if (recordsTable) {
+                recordsTable.style.display = "none";
+            }
 
             if (emptyState) {
                 emptyState.style.display = "block";
             }
 
-            recordCount.textContent = "No records available.";
+            if (recordCount) {
+                recordCount.textContent =
+                    "No records available.";
+            }
 
             return;
-
         }
 
 
@@ -185,7 +248,9 @@ document.addEventListener("DOMContentLoaded", function () {
         // SHOW TABLE
         // ----------------------------------------------------
 
-        recordsTable.style.display = "block";
+        if (recordsTable) {
+            recordsTable.style.display = "table";
+        }
 
         if (emptyState) {
             emptyState.style.display = "none";
@@ -196,8 +261,16 @@ document.addEventListener("DOMContentLoaded", function () {
         // RECORD COUNT
         // ----------------------------------------------------
 
-        recordCount.textContent =
-            `${records.length} record${records.length === 1 ? "" : "s"} found`;
+        if (recordCount) {
+
+            recordCount.textContent =
+                `${records.length} record${
+                    records.length === 1
+                        ? ""
+                        : "s"
+                } found`;
+
+        }
 
 
         // ----------------------------------------------------
@@ -206,71 +279,91 @@ document.addEventListener("DOMContentLoaded", function () {
 
         records.forEach(function (record) {
 
-            const row = document.createElement("tr");
+            const row =
+                document.createElement("tr");
 
 
             // ------------------------------------------------
             // GET VALUES
             // ------------------------------------------------
 
-            const id = getValue(record, [
-                "id",
-                "recordId",
-                "record_id"
-            ]);
+            const id =
+                getValue(record, [
+                    "id",
+                    "recordId",
+                    "record_id"
+                ]);
 
-            const memberNumber = getValue(record, [
-                "memberNumber",
-                "member_number",
-                "Member Number"
-            ]);
 
-            const memberName = getValue(record, [
-                "memberName",
-                "member_name",
-                "Member Name"
-            ]);
+            const memberNumber =
+                getValue(record, [
+                    "memberNumber",
+                    "member_number",
+                    "Member Number"
+                ]);
 
-            const loanNumber = getValue(record, [
-                "loanNumber",
-                "loan_number",
-                "Loan Number"
-            ]);
 
-            const loanType = getValue(record, [
-                "loanType",
-                "loan_type",
-                "Loan Type"
-            ]);
+            const memberName =
+                getValue(record, [
+                    "memberName",
+                    "member_name",
+                    "Member Name"
+                ]);
 
-            const loanAmount = getValue(record, [
-                "loanAmount",
-                "loan_amount",
-                "Loan Amount"
-            ]);
 
-            const loanDate = getValue(record, [
-                "loanDate",
-                "loan_date",
-                "Loan Date"
-            ]);
+            const loanNumber =
+                getValue(record, [
+                    "loanNumber",
+                    "loan_number",
+                    "Loan Number"
+                ]);
 
-            const repaymentDate = getValue(record, [
-                "repaymentDate",
-                "repayment_date",
-                "Repayment Date"
-            ]);
 
-            const maturityDate = getValue(record, [
-                "maturityDate",
-                "maturity_date",
-                "Maturity Date"
-            ]);
+            const loanType =
+                getValue(record, [
+                    "loanType",
+                    "loan_type",
+                    "Loan Type"
+                ]);
 
-            const status = getValue(record, [
-                "status",
-                "Status"
-            ]);
+
+            const loanAmount =
+                getValue(record, [
+                    "loanAmount",
+                    "loan_amount",
+                    "Loan Amount"
+                ]);
+
+
+            const loanDate =
+                getValue(record, [
+                    "loanDate",
+                    "loan_date",
+                    "Loan Date"
+                ]);
+
+
+            const repaymentDate =
+                getValue(record, [
+                    "repaymentDate",
+                    "repayment_date",
+                    "Repayment Date"
+                ]);
+
+
+            const maturityDate =
+                getValue(record, [
+                    "maturityDate",
+                    "maturity_date",
+                    "Maturity Date"
+                ]);
+
+
+            const status =
+                getValue(record, [
+                    "status",
+                    "Status"
+                ]);
 
 
             // ------------------------------------------------
@@ -316,12 +409,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 </td>
 
                 <td>
+
                     <a
                         href="records-details.html?id=${encodeURIComponent(id)}"
                         class="btn btn-primary btn-sm"
                     >
                         View Details
                     </a>
+
                 </td>
 
             `;
@@ -334,94 +429,115 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // FILTER RECORDS
-    // --------------------------------------------------------
+    // ========================================================
 
     function filterRecords() {
 
-        const searchTerm = recordSearch
-            ? recordSearch.value.trim().toLowerCase()
-            : "";
-
-        const selectedStatus = statusFilter
-            ? statusFilter.value.trim().toLowerCase()
-            : "";
-
-
-        const filteredRecords = allRecords.filter(
-            function (record) {
-
-                // --------------------------------------------
-                // SEARCH VALUES
-                // --------------------------------------------
-
-                const memberNumber = String(
-                    getValue(record, [
-                        "memberNumber",
-                        "member_number",
-                        "Member Number"
-                    ])
-                ).toLowerCase();
-
-                const memberName = String(
-                    getValue(record, [
-                        "memberName",
-                        "member_name",
-                        "Member Name"
-                    ])
-                ).toLowerCase();
-
-                const loanNumber = String(
-                    getValue(record, [
-                        "loanNumber",
-                        "loan_number",
-                        "Loan Number"
-                    ])
-                ).toLowerCase();
-
-                const transactionNumber = String(
-                    getValue(record, [
-                        "transactionNumber",
-                        "transaction_number",
-                        "Transaction Number"
-                    ])
-                ).toLowerCase();
+        const searchTerm =
+            recordSearch
+                ? recordSearch.value
+                    .trim()
+                    .toLowerCase()
+                : "";
 
 
-                // --------------------------------------------
-                // SEARCH MATCH
-                // --------------------------------------------
-
-                const matchesSearch =
-                    searchTerm === "" ||
-                    memberNumber.includes(searchTerm) ||
-                    memberName.includes(searchTerm) ||
-                    loanNumber.includes(searchTerm) ||
-                    transactionNumber.includes(searchTerm);
+        const selectedStatus =
+            statusFilter
+                ? statusFilter.value
+                    .trim()
+                    .toLowerCase()
+                : "";
 
 
-                // --------------------------------------------
-                // STATUS MATCH
-                // --------------------------------------------
+        const filteredRecords =
+            allRecords.filter(
+                function (record) {
 
-                const recordStatus = String(
-                    getValue(record, [
-                        "status",
-                        "Status"
-                    ])
-                ).toLowerCase();
+                    // ----------------------------------------
+                    // SEARCH VALUES
+                    // ----------------------------------------
+
+                    const memberNumber =
+                        String(
+                            getValue(record, [
+                                "memberNumber",
+                                "member_number",
+                                "Member Number"
+                            ])
+                        ).toLowerCase();
 
 
-                const matchesStatus =
-                    selectedStatus === "" ||
-                    recordStatus === selectedStatus;
+                    const memberName =
+                        String(
+                            getValue(record, [
+                                "memberName",
+                                "member_name",
+                                "Member Name"
+                            ])
+                        ).toLowerCase();
 
 
-                return matchesSearch && matchesStatus;
+                    const loanNumber =
+                        String(
+                            getValue(record, [
+                                "loanNumber",
+                                "loan_number",
+                                "Loan Number"
+                            ])
+                        ).toLowerCase();
 
-            }
-        );
+
+                    const transactionNumber =
+                        String(
+                            getValue(record, [
+                                "transactionNumber",
+                                "transaction_number",
+                                "transactionReference",
+                                "transaction_reference",
+                                "Transaction Number"
+                            ])
+                        ).toLowerCase();
+
+
+                    // ----------------------------------------
+                    // SEARCH MATCH
+                    // ----------------------------------------
+
+                    const matchesSearch =
+                        searchTerm === "" ||
+                        memberNumber.includes(searchTerm) ||
+                        memberName.includes(searchTerm) ||
+                        loanNumber.includes(searchTerm) ||
+                        transactionNumber.includes(searchTerm);
+
+
+                    // ----------------------------------------
+                    // STATUS MATCH
+                    // ----------------------------------------
+
+                    const recordStatus =
+                        String(
+                            getValue(record, [
+                                "status",
+                                "Status"
+                            ])
+                        ).toLowerCase();
+
+
+                    const matchesStatus =
+                        selectedStatus === "" ||
+                        recordStatus === selectedStatus;
+
+
+                    return (
+                        matchesSearch &&
+                        matchesStatus
+                    );
+
+                }
+            );
 
 
         // ----------------------------------------------------
@@ -440,11 +556,15 @@ document.addEventListener("DOMContentLoaded", function () {
             allRecords.length > 0
         ) {
 
-            recordsTable.style.display = "none";
+            if (recordsTable) {
+                recordsTable.style.display = "none";
+            }
+
 
             if (emptyState) {
 
                 emptyState.style.display = "block";
+
 
                 const title =
                     emptyState.querySelector("h3");
@@ -457,13 +577,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 if (title) {
-                    title.textContent = "No Matching Records";
+                    title.textContent =
+                        "No Matching Records";
                 }
 
+
                 if (message) {
+
                     message.textContent =
                         "No financial records match your search or filter.";
+
                 }
+
 
                 if (button) {
                     button.style.display = "none";
@@ -471,38 +596,49 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
 
-            recordCount.textContent =
-                "No matching records found.";
+
+            if (recordCount) {
+
+                recordCount.textContent =
+                    "No matching records found.";
+
+            }
 
         }
 
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // CREATE STATUS BADGE
-    // --------------------------------------------------------
+    // ========================================================
 
     function createStatusBadge(status) {
 
         if (
             status === null ||
             status === undefined ||
-            status === ""
+            status === "" ||
+            status === "—"
         ) {
             return "—";
         }
 
 
-        const cleanStatus = String(status).trim();
+        const cleanStatus =
+            String(status).trim();
 
-        const className = cleanStatus
-            .toLowerCase()
-            .replace(/\s+/g, "-");
+
+        const className =
+            cleanStatus
+                .toLowerCase()
+                .replace(/\s+/g, "-");
 
 
         return `
-            <span class="status-badge status-${escapeHtml(className)}">
+            <span
+                class="status-badge status-${escapeHtml(className)}"
+            >
                 ${escapeHtml(cleanStatus)}
             </span>
         `;
@@ -510,9 +646,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // FORMAT CURRENCY
-    // --------------------------------------------------------
+    // ========================================================
 
     function formatCurrency(value) {
 
@@ -526,26 +662,34 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        const number = Number(value);
+        const number =
+            Number(value);
 
 
         if (Number.isNaN(number)) {
-            return escapeHtml(String(value));
+
+            return escapeHtml(
+                String(value)
+            );
+
         }
 
 
-        return new Intl.NumberFormat("en-KE", {
-            style: "currency",
-            currency: "KES",
-            minimumFractionDigits: 2
-        }).format(number);
+        return new Intl.NumberFormat(
+            "en-KE",
+            {
+                style: "currency",
+                currency: "KES",
+                minimumFractionDigits: 2
+            }
+        ).format(number);
 
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // FORMAT DATE
-    // --------------------------------------------------------
+    // ========================================================
 
     function formatDate(value) {
 
@@ -559,26 +703,38 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        const date = new Date(value);
+        const date =
+            new Date(value);
 
 
-        if (Number.isNaN(date.getTime())) {
-            return escapeHtml(String(value));
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return escapeHtml(
+                String(value)
+            );
+
         }
 
 
-        return date.toLocaleDateString("en-KE", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-        });
+        return date.toLocaleDateString(
+            "en-KE",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            }
+        );
 
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // GET VALUE
-    // --------------------------------------------------------
+    // ========================================================
 
     function getValue(object, keys) {
 
@@ -602,67 +758,101 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // SHOW LOADING
-    // --------------------------------------------------------
+    // ========================================================
 
     function showLoading() {
 
-        recordsTable.style.display = "block";
+        if (recordsTable) {
+            recordsTable.style.display = "table";
+        }
+
 
         if (emptyState) {
             emptyState.style.display = "none";
         }
 
-        recordsBody.innerHTML = `
-            <tr>
-                <td colspan="10" style="text-align:center;">
-                    Loading financial records...
-                </td>
-            </tr>
-        `;
 
-        recordCount.textContent =
-            "Loading records...";
+        if (recordsBody) {
+
+            recordsBody.innerHTML = `
+                <tr>
+                    <td
+                        colspan="10"
+                        style="text-align:center;"
+                    >
+                        Loading financial records...
+                    </td>
+                </tr>
+            `;
+
+        }
+
+
+        if (recordCount) {
+
+            recordCount.textContent =
+                "Loading records...";
+
+        }
 
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // SHOW ERROR
-    // --------------------------------------------------------
+    // ========================================================
 
     function showError(message) {
 
-        recordsTable.style.display = "block";
+        if (recordsTable) {
+            recordsTable.style.display = "table";
+        }
+
 
         if (emptyState) {
             emptyState.style.display = "none";
         }
 
-        recordsBody.innerHTML = `
-            <tr>
-                <td colspan="10" style="text-align:center;">
-                    ${escapeHtml(message)}
-                </td>
-            </tr>
-        `;
 
-        recordCount.textContent =
-            "Unable to load records.";
+        if (recordsBody) {
+
+            recordsBody.innerHTML = `
+                <tr>
+                    <td
+                        colspan="10"
+                        style="text-align:center;"
+                    >
+                        ${escapeHtml(message)}
+                    </td>
+                </tr>
+            `;
+
+        }
+
+
+        if (recordCount) {
+
+            recordCount.textContent =
+                "Unable to load records.";
+
+        }
 
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // ESCAPE HTML
-    // --------------------------------------------------------
+    // ========================================================
 
     function escapeHtml(value) {
 
-        const div = document.createElement("div");
+        const div =
+            document.createElement("div");
 
-        div.textContent = String(value);
+        div.textContent =
+            String(value);
 
         return div.innerHTML;
 
