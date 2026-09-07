@@ -1,3 +1,4 @@
+"use strict";
 
 // ============================================================
 // FINANCE DATE RECOVERY TOOL
@@ -8,6 +9,15 @@
 const loginForm = document.getElementById("loginForm");
 const errorMessage = document.getElementById("errorMessage");
 const loginButton = document.getElementById("loginButton");
+
+
+// ============================================================
+// CHECK ELEMENTS
+// ============================================================
+
+if (!loginForm) {
+    console.error("Login form not found.");
+}
 
 
 // ============================================================
@@ -77,7 +87,7 @@ loginForm.addEventListener("submit", async function (e) {
 
 
         // ----------------------------------------------------
-        // READ API RESPONSE
+        // READ RESPONSE
         // ----------------------------------------------------
 
         const data = await response.json();
@@ -89,11 +99,11 @@ loginForm.addEventListener("submit", async function (e) {
         // LOGIN SUCCESSFUL
         // ----------------------------------------------------
 
-        if (data.success) {
+        if (response.ok && data.success) {
 
 
             // ------------------------------------------------
-            // CHECK THAT TOKEN EXISTS
+            // CHECK JWT TOKEN
             // ------------------------------------------------
 
             if (!data.token) {
@@ -103,9 +113,8 @@ loginForm.addEventListener("submit", async function (e) {
                 );
 
                 errorMessage.textContent =
-                    "Login succeeded, but the server did not return an authorization token.";
+                    "Login succeeded, but no authorization token was returned.";
 
-                // Restore button
                 loginButton.disabled = false;
                 loginButton.textContent = "Login";
 
@@ -114,27 +123,48 @@ loginForm.addEventListener("submit", async function (e) {
 
 
             // ------------------------------------------------
-            // SAVE JWT TOKEN
+            // SAVE TOKEN
+            //
+            // IMPORTANT:
+            // These names MUST match script.js
             // ------------------------------------------------
 
             localStorage.setItem(
-                "token",
+                "financeRecovery_token",
                 data.token
             );
 
 
             // ------------------------------------------------
-            // SAVE USER INFORMATION
+            // SAVE USER
+            //
+            // IMPORTANT:
+            // These names MUST match script.js
             // ------------------------------------------------
 
             localStorage.setItem(
-                "user",
+                "financeRecovery_user",
                 JSON.stringify(data.user)
             );
 
 
-            console.log("JWT token saved.");
-            console.log("User saved.");
+            // ------------------------------------------------
+            // VERIFY STORAGE
+            // ------------------------------------------------
+
+            console.log(
+                "JWT token saved:",
+                !!localStorage.getItem(
+                    "financeRecovery_token"
+                )
+            );
+
+            console.log(
+                "User saved:",
+                !!localStorage.getItem(
+                    "financeRecovery_user"
+                )
+            );
 
 
             // ------------------------------------------------
@@ -144,19 +174,20 @@ loginForm.addEventListener("submit", async function (e) {
             window.location.href =
                 "dashboard.html";
 
-        } else {
-
-            // ------------------------------------------------
-            // LOGIN FAILED
-            // ------------------------------------------------
-
-            errorMessage.textContent =
-                data.message || "Invalid username or password.";
-
-            // Restore button
-            loginButton.disabled = false;
-            loginButton.textContent = "Login";
+            return;
         }
+
+
+        // ----------------------------------------------------
+        // LOGIN FAILED
+        // ----------------------------------------------------
+
+        errorMessage.textContent =
+            data.message ||
+            "Invalid username or password.";
+
+        loginButton.disabled = false;
+        loginButton.textContent = "Login";
 
 
     } catch (error) {
@@ -169,10 +200,8 @@ loginForm.addEventListener("submit", async function (e) {
         errorMessage.textContent =
             "Unable to connect to the server.";
 
-        // Restore button
         loginButton.disabled = false;
         loginButton.textContent = "Login";
     }
 
 });
-
