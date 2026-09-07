@@ -1,4 +1,6 @@
 
+"use strict";
+
 // ============================================================
 // FINANCE DATE RECOVERY TOOL
 // DATE-RECOVERY.JS
@@ -10,14 +12,16 @@ document.addEventListener("DOMContentLoaded", function () {
     // API
     // --------------------------------------------------------
 
-    const API_URL = "https://finance-date-recovery-backend.onrender.com/api/recovery";
+    const API_URL =
+        "https://finance-date-recovery-backend.onrender.com/api/recovery";
 
 
     // --------------------------------------------------------
     // ELEMENTS
     // --------------------------------------------------------
 
-    const form = document.getElementById("dateRecoveryForm");
+    const form =
+        document.getElementById("dateRecoveryForm");
 
     const memberNumber =
         document.getElementById("memberNumber");
@@ -78,24 +82,37 @@ document.addEventListener("DOMContentLoaded", function () {
     let selectedRecord = null;
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // GET AUTHENTICATION TOKEN
-    // --------------------------------------------------------
+    // ========================================================
+
+    /*
+        IMPORTANT:
+
+        index.js saves the token as:
+
+        financeRecovery_token
+
+        script.js also reads:
+
+        financeRecovery_token
+
+        Therefore date-recovery.js must use the same key.
+    */
 
     function getToken() {
 
-        const possibleKeys = [
-            "token",
-            "authToken",
-            "jwtToken",
-            "accessToken"
-        ];
+        // ----------------------------------------------------
+        // USE SHARED AUTHENTICATION SYSTEM
+        // ----------------------------------------------------
 
-        // Check localStorage
-        for (const key of possibleKeys) {
+        if (
+            window.FinanceRecovery &&
+            typeof window.FinanceRecovery.getAuthToken === "function"
+        ) {
 
             const token =
-                localStorage.getItem(key);
+                window.FinanceRecovery.getAuthToken();
 
             if (token) {
                 return token;
@@ -103,15 +120,31 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        // Check sessionStorage
-        for (const key of possibleKeys) {
+        // ----------------------------------------------------
+        // DIRECT LOCAL STORAGE FALLBACK
+        // ----------------------------------------------------
 
-            const token =
-                sessionStorage.getItem(key);
+        const localToken =
+            localStorage.getItem(
+                "financeRecovery_token"
+            );
 
-            if (token) {
-                return token;
-            }
+        if (localToken) {
+            return localToken;
+        }
+
+
+        // ----------------------------------------------------
+        // SESSION STORAGE FALLBACK
+        // ----------------------------------------------------
+
+        const sessionToken =
+            sessionStorage.getItem(
+                "financeRecovery_token"
+            );
+
+        if (sessionToken) {
+            return sessionToken;
         }
 
 
@@ -119,14 +152,22 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // AUTHENTICATED FETCH
-    // --------------------------------------------------------
+    // ========================================================
 
-    async function apiFetch(url, options = {}) {
+    async function apiFetch(
+        url,
+        options = {}
+    ) {
 
-        const token = getToken();
+        const token =
+            getToken();
 
+
+        // ----------------------------------------------------
+        // CHECK TOKEN
+        // ----------------------------------------------------
 
         if (!token) {
 
@@ -137,24 +178,57 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
+        // ----------------------------------------------------
+        // BUILD HEADERS
+        // ----------------------------------------------------
+
         const headers = {
+
             ...(options.headers || {}),
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
+
+            "Authorization":
+                `Bearer ${token}`
         };
 
 
-        return fetch(url, {
-            ...options,
-            headers: headers
-        });
+        // ----------------------------------------------------
+        // CONTENT TYPE
+        // ----------------------------------------------------
+
+        /*
+            Only add JSON Content-Type when a body exists.
+
+            GET requests do not need Content-Type.
+        */
+
+        if (
+            options.body &&
+            !(options.body instanceof FormData)
+        ) {
+
+            headers["Content-Type"] =
+                "application/json";
+        }
+
+
+        // ----------------------------------------------------
+        // FETCH REQUEST
+        // ----------------------------------------------------
+
+        return fetch(
+            url,
+            {
+                ...options,
+                headers
+            }
+        );
 
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // SEARCH FORM
-    // --------------------------------------------------------
+    // ========================================================
 
     if (form) {
 
@@ -172,9 +246,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // CLEAR BUTTON
-    // --------------------------------------------------------
+    // ========================================================
 
     if (clearButton) {
 
@@ -190,23 +264,31 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // SEARCH RECORDS
-    // --------------------------------------------------------
+    // ========================================================
 
     async function searchRecords() {
 
         const memberNumberValue =
-            memberNumber ? memberNumber.value.trim() : "";
+            memberNumber
+                ? memberNumber.value.trim()
+                : "";
 
         const memberNameValue =
-            memberName ? memberName.value.trim() : "";
+            memberName
+                ? memberName.value.trim()
+                : "";
 
         const loanNumberValue =
-            loanNumber ? loanNumber.value.trim() : "";
+            loanNumber
+                ? loanNumber.value.trim()
+                : "";
 
         const loanTypeValue =
-            loanType ? loanType.value.trim() : "";
+            loanType
+                ? loanType.value.trim()
+                : "";
 
         const transactionReferenceValue =
             transactionReference
@@ -214,13 +296,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 : "";
 
         const loanDateValue =
-            loanDate ? loanDate.value : "";
+            loanDate
+                ? loanDate.value
+                : "";
 
         const repaymentDateValue =
-            repaymentDate ? repaymentDate.value : "";
+            repaymentDate
+                ? repaymentDate.value
+                : "";
 
         const maturityDateValue =
-            maturityDate ? maturityDate.value : "";
+            maturityDate
+                ? maturityDate.value
+                : "";
 
 
         // ----------------------------------------------------
@@ -294,11 +382,10 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-            // The backend currently does not search
-            // loanType, loanDate, repaymentDate or maturityDate.
-            //
-            // Transaction field MUST be called transactionNumber
-            // because that is what the backend accepts.
+            /*
+                The backend currently searches transactionNumber,
+                not transactionReference.
+            */
 
             if (transactionReferenceValue) {
 
@@ -320,15 +407,36 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-            const result =
-                await response.json();
+            // ------------------------------------------------
+            // READ RESPONSE
+            // ------------------------------------------------
+
+            let result;
+
+            try {
+
+                result =
+                    await response.json();
+
+            } catch (jsonError) {
+
+                result = {
+                    success: false,
+                    message:
+                        "The server returned an invalid response."
+                };
+
+            }
 
 
             // ------------------------------------------------
             // AUTHENTICATION ERROR
             // ------------------------------------------------
 
-            if (response.status === 401) {
+            if (
+                response.status === 401 ||
+                response.status === 403
+            ) {
 
                 showMessage(
                     "Your login session has expired. Please login again."
@@ -374,7 +482,9 @@ document.addEventListener("DOMContentLoaded", function () {
             // DISPLAY RECORDS
             // ------------------------------------------------
 
-            displayResults(records);
+            displayResults(
+                records
+            );
 
 
         } catch (error) {
@@ -403,26 +513,33 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // DISPLAY RESULTS
-    // --------------------------------------------------------
+    // ========================================================
 
-    function displayResults(records) {
+    function displayResults(
+        records
+    ) {
 
         if (!resultsBody) {
             return;
         }
 
 
-        resultsBody.innerHTML = "";
+        resultsBody.innerHTML =
+            "";
 
 
         if (recoveredRecord) {
-            recoveredRecord.style.display = "none";
+
+            recoveredRecord.style.display =
+                "none";
+
         }
 
 
-        selectedRecord = null;
+        selectedRecord =
+            null;
 
 
         // ----------------------------------------------------
@@ -435,17 +552,28 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
 
             if (resultsContainer) {
-                resultsContainer.style.display = "none";
+
+                resultsContainer.style.display =
+                    "none";
+
             }
+
 
             if (emptyState) {
-                emptyState.style.display = "block";
+
+                emptyState.style.display =
+                    "block";
+
             }
 
+
             if (resultMessage) {
+
                 resultMessage.textContent =
                     "No matching financial records were found.";
+
             }
+
 
             return;
 
@@ -457,12 +585,18 @@ document.addEventListener("DOMContentLoaded", function () {
         // ----------------------------------------------------
 
         if (emptyState) {
-            emptyState.style.display = "none";
+
+            emptyState.style.display =
+                "none";
+
         }
 
 
         if (resultsContainer) {
-            resultsContainer.style.display = "block";
+
+            resultsContainer.style.display =
+                "block";
+
         }
 
 
@@ -478,180 +612,224 @@ document.addEventListener("DOMContentLoaded", function () {
         // CREATE TABLE ROWS
         // ----------------------------------------------------
 
-        records.forEach(function (record) {
+        records.forEach(
+            function (record) {
 
-            const row =
-                document.createElement("tr");
-
-
-            const memberNameValue =
-                getValue(record, [
-                    "memberName",
-                    "member_name",
-                    "Member Name"
-                ]);
+                const row =
+                    document.createElement("tr");
 
 
-            const memberNumberValue =
-                getValue(record, [
-                    "memberNumber",
-                    "member_number",
-                    "Member Number"
-                ]);
+                const memberNameValue =
+                    getValue(
+                        record,
+                        [
+                            "memberName",
+                            "member_name",
+                            "Member Name"
+                        ]
+                    );
 
 
-            const loanNumberValue =
-                getValue(record, [
-                    "loanNumber",
-                    "loan_number",
-                    "Loan Number"
-                ]);
+                const memberNumberValue =
+                    getValue(
+                        record,
+                        [
+                            "memberNumber",
+                            "member_number",
+                            "Member Number"
+                        ]
+                    );
 
 
-            const loanTypeValue =
-                getValue(record, [
-                    "loanType",
-                    "loan_type",
-                    "Loan Type"
-                ]);
+                const loanNumberValue =
+                    getValue(
+                        record,
+                        [
+                            "loanNumber",
+                            "loan_number",
+                            "Loan Number"
+                        ]
+                    );
 
 
-            const loanAmountValue =
-                getValue(record, [
-                    "loanAmount",
-                    "loan_amount",
-                    "Loan Amount"
-                ]);
+                const loanTypeValue =
+                    getValue(
+                        record,
+                        [
+                            "loanType",
+                            "loan_type",
+                            "Loan Type"
+                        ]
+                    );
 
 
-            const loanDateValue =
-                getValue(record, [
-                    "loanDate",
-                    "loan_date",
-                    "Loan Date"
-                ]);
+                const loanAmountValue =
+                    getValue(
+                        record,
+                        [
+                            "loanAmount",
+                            "loan_amount",
+                            "Loan Amount"
+                        ]
+                    );
 
 
-            const repaymentDateValue =
-                getValue(record, [
-                    "repaymentDate",
-                    "repayment_date",
-                    "Repayment Date"
-                ]);
+                const loanDateValue =
+                    getValue(
+                        record,
+                        [
+                            "loanDate",
+                            "loan_date",
+                            "Loan Date"
+                        ]
+                    );
 
 
-            const maturityDateValue =
-                getValue(record, [
-                    "maturityDate",
-                    "maturity_date",
-                    "Maturity Date"
-                ]);
+                const repaymentDateValue =
+                    getValue(
+                        record,
+                        [
+                            "repaymentDate",
+                            "repayment_date",
+                            "Repayment Date"
+                        ]
+                    );
 
 
-            const statusValue =
-                getValue(record, [
-                    "status",
-                    "Status"
-                ]);
+                const maturityDateValue =
+                    getValue(
+                        record,
+                        [
+                            "maturityDate",
+                            "maturity_date",
+                            "Maturity Date"
+                        ]
+                    );
 
 
-            row.innerHTML = `
-
-                <td>
-                    ${escapeHtml(memberNameValue)}
-                </td>
-
-                <td>
-                    ${escapeHtml(memberNumberValue)}
-                </td>
-
-                <td>
-                    ${escapeHtml(loanNumberValue)}
-                </td>
-
-                <td>
-                    ${escapeHtml(loanTypeValue)}
-                </td>
-
-                <td>
-                    ${formatCurrency(loanAmountValue)}
-                </td>
-
-                <td>
-                    ${formatDate(loanDateValue)}
-                </td>
-
-                <td>
-                    ${formatDate(repaymentDateValue)}
-                </td>
-
-                <td>
-                    ${formatDate(maturityDateValue)}
-                </td>
-
-                <td>
-                    ${createStatusBadge(statusValue)}
-                </td>
-
-                <td>
-
-                    <button
-                        type="button"
-                        class="btn btn-primary btn-sm recover-record"
-                    >
-                        Recover
-                    </button>
-
-                </td>
-
-            `;
+                const statusValue =
+                    getValue(
+                        record,
+                        [
+                            "status",
+                            "Status"
+                        ]
+                    );
 
 
-            // ------------------------------------------------
-            // RECOVER BUTTON
-            // ------------------------------------------------
+                row.innerHTML = `
 
-            const recoverButton =
-                row.querySelector(
-                    ".recover-record"
-                );
+                    <td>
+                        ${escapeHtml(memberNameValue)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(memberNumberValue)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(loanNumberValue)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(loanTypeValue)}
+                    </td>
+
+                    <td>
+                        ${formatCurrency(loanAmountValue)}
+                    </td>
+
+                    <td>
+                        ${formatDate(loanDateValue)}
+                    </td>
+
+                    <td>
+                        ${formatDate(repaymentDateValue)}
+                    </td>
+
+                    <td>
+                        ${formatDate(maturityDateValue)}
+                    </td>
+
+                    <td>
+                        ${createStatusBadge(statusValue)}
+                    </td>
+
+                    <td>
+
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-sm recover-record"
+                        >
+                            <i class="fa-solid fa-calendar-check"></i>
+                            Recover
+                        </button>
+
+                    </td>
+
+                `;
 
 
-            recoverButton.addEventListener(
-                "click",
-                async function () {
+                // ------------------------------------------------
+                // RECOVER BUTTON
+                // ------------------------------------------------
 
-                    await recoverRecord(record);
+                const recoverButton =
+                    row.querySelector(
+                        ".recover-record"
+                    );
+
+
+                if (recoverButton) {
+
+                    recoverButton.addEventListener(
+                        "click",
+                        async function () {
+
+                            await recoverRecord(
+                                record
+                            );
+
+                        }
+                    );
 
                 }
-            );
 
 
-            resultsBody.appendChild(row);
+                resultsBody.appendChild(
+                    row
+                );
 
-        });
+            }
+        );
 
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // RECOVER RECORD
-    // --------------------------------------------------------
+    // ========================================================
 
-    async function recoverRecord(record) {
+    async function recoverRecord(
+        record
+    ) {
 
         const id =
-            getValue(record, [
-                "id",
-                "recordId",
-                "record_id"
-            ]);
+            getValue(
+                record,
+                [
+                    "id",
+                    "recordId",
+                    "record_id"
+                ]
+            );
 
 
         if (
             id === "—" ||
             id === "" ||
-            id === null
+            id === null ||
+            id === undefined
         ) {
 
             alert(
@@ -687,15 +865,36 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-            const result =
-                await response.json();
+            // ------------------------------------------------
+            // READ RESPONSE
+            // ------------------------------------------------
+
+            let result;
+
+            try {
+
+                result =
+                    await response.json();
+
+            } catch (jsonError) {
+
+                result = {
+                    success: false,
+                    message:
+                        "The server returned an invalid response."
+                };
+
+            }
 
 
             // ------------------------------------------------
             // AUTHENTICATION ERROR
             // ------------------------------------------------
 
-            if (response.status === 401) {
+            if (
+                response.status === 401 ||
+                response.status === 403
+            ) {
 
                 alert(
                     "Your login session has expired. Please login again."
@@ -730,7 +929,8 @@ document.addEventListener("DOMContentLoaded", function () {
             // ------------------------------------------------
 
             const recoveredData =
-                result.data || record;
+                result.data ||
+                record;
 
 
             selectedRecord =
@@ -772,11 +972,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // SHOW RECOVERED RECORD
-    // --------------------------------------------------------
+    // ========================================================
 
-    function showRecoveredRecord(record) {
+    function showRecoveredRecord(
+        record
+    ) {
 
         selectedRecord =
             record;
@@ -788,21 +990,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
         setText(
             "recoveredMemberName",
-            getValue(record, [
-                "memberName",
-                "member_name",
-                "Member Name"
-            ])
+            getValue(
+                record,
+                [
+                    "memberName",
+                    "member_name",
+                    "Member Name"
+                ]
+            )
         );
 
 
         setText(
             "recoveredMemberNumber",
-            getValue(record, [
-                "memberNumber",
-                "member_number",
-                "Member Number"
-            ])
+            getValue(
+                record,
+                [
+                    "memberNumber",
+                    "member_number",
+                    "Member Number"
+                ]
+            )
         );
 
 
@@ -812,32 +1020,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
         setText(
             "recoveredLoanNumber",
-            getValue(record, [
-                "loanNumber",
-                "loan_number",
-                "Loan Number"
-            ])
+            getValue(
+                record,
+                [
+                    "loanNumber",
+                    "loan_number",
+                    "Loan Number"
+                ]
+            )
         );
 
 
         setText(
             "recoveredLoanType",
-            getValue(record, [
-                "loanType",
-                "loan_type",
-                "Loan Type"
-            ])
+            getValue(
+                record,
+                [
+                    "loanType",
+                    "loan_type",
+                    "Loan Type"
+                ]
+            )
         );
 
 
         setText(
             "recoveredLoanAmount",
             formatCurrency(
-                getValue(record, [
-                    "loanAmount",
-                    "loan_amount",
-                    "Loan Amount"
-                ])
+                getValue(
+                    record,
+                    [
+                        "loanAmount",
+                        "loan_amount",
+                        "Loan Amount"
+                    ]
+                )
             )
         );
 
@@ -849,11 +1066,14 @@ document.addEventListener("DOMContentLoaded", function () {
         setText(
             "recoveredLoanDate",
             formatDate(
-                getValue(record, [
-                    "loanDate",
-                    "loan_date",
-                    "Loan Date"
-                ])
+                getValue(
+                    record,
+                    [
+                        "loanDate",
+                        "loan_date",
+                        "Loan Date"
+                    ]
+                )
             )
         );
 
@@ -861,11 +1081,14 @@ document.addEventListener("DOMContentLoaded", function () {
         setText(
             "recoveredRepaymentDate",
             formatDate(
-                getValue(record, [
-                    "repaymentDate",
-                    "repayment_date",
-                    "Repayment Date"
-                ])
+                getValue(
+                    record,
+                    [
+                        "repaymentDate",
+                        "repayment_date",
+                        "Repayment Date"
+                    ]
+                )
             )
         );
 
@@ -873,11 +1096,14 @@ document.addEventListener("DOMContentLoaded", function () {
         setText(
             "recoveredMaturityDate",
             formatDate(
-                getValue(record, [
-                    "maturityDate",
-                    "maturity_date",
-                    "Maturity Date"
-                ])
+                getValue(
+                    record,
+                    [
+                        "maturityDate",
+                        "maturity_date",
+                        "Maturity Date"
+                    ]
+                )
             )
         );
 
@@ -888,10 +1114,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         setText(
             "recoveredStatus",
-            getValue(record, [
-                "status",
-                "Status"
-            ])
+            getValue(
+                record,
+                [
+                    "status",
+                    "Status"
+                ]
+            )
         );
 
 
@@ -901,13 +1130,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         setText(
             "recoveredSourceFile",
-            getValue(record, [
-                "sourceFile",
-                "source_file",
-                "fileName",
-                "file_name",
-                "Source Excel File"
-            ])
+            getValue(
+                record,
+                [
+                    "sourceFile",
+                    "source_file",
+                    "fileName",
+                    "file_name",
+                    "Source Excel File"
+                ]
+            )
         );
 
 
@@ -931,9 +1163,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // VIEW FULL DETAILS
-    // --------------------------------------------------------
+    // ========================================================
 
     if (viewDetailsButton) {
 
@@ -953,14 +1185,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 const id =
-                    getValue(selectedRecord, [
-                        "id",
-                        "recordId",
-                        "record_id"
-                    ]);
+                    getValue(
+                        selectedRecord,
+                        [
+                            "id",
+                            "recordId",
+                            "record_id"
+                        ]
+                    );
 
 
-                if (id === "—") {
+                if (
+                    id === "—" ||
+                    id === "" ||
+                    id === null
+                ) {
 
                     alert(
                         "This record does not have a valid ID."
@@ -980,9 +1219,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // VIEW SOURCE RECORD
-    // --------------------------------------------------------
+    // ========================================================
 
     if (viewSourceButton) {
 
@@ -1037,41 +1276,53 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // CLEAR SEARCH
-    // --------------------------------------------------------
+    // ========================================================
 
     function clearSearch() {
 
         if (form) {
+
             form.reset();
+
         }
 
 
         if (resultsBody) {
-            resultsBody.innerHTML = "";
+
+            resultsBody.innerHTML =
+                "";
+
         }
 
 
         if (resultsContainer) {
+
             resultsContainer.style.display =
                 "none";
+
         }
 
 
         if (emptyState) {
+
             emptyState.style.display =
                 "block";
+
         }
 
 
         if (recoveredRecord) {
+
             recoveredRecord.style.display =
                 "none";
+
         }
 
 
-        selectedRecord = null;
+        selectedRecord =
+            null;
 
 
         if (resultMessage) {
@@ -1084,11 +1335,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // LOADING STATE
-    // --------------------------------------------------------
+    // ========================================================
 
-    function setLoading(isLoading) {
+    function setLoading(
+        isLoading
+    ) {
 
         if (!searchButton) {
             return;
@@ -1100,27 +1353,31 @@ document.addEventListener("DOMContentLoaded", function () {
             searchButton.disabled =
                 true;
 
-            searchButton.textContent =
-                "Searching...";
+
+            searchButton.innerHTML =
+                '<i class="fa-solid fa-spinner fa-spin"></i> Searching...';
 
         } else {
 
             searchButton.disabled =
                 false;
 
-            searchButton.textContent =
-                "Search Records";
+
+            searchButton.innerHTML =
+                '<i class="fa-solid fa-magnifying-glass"></i> Search Records';
 
         }
 
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // MESSAGE
-    // --------------------------------------------------------
+    // ========================================================
 
-    function showMessage(message) {
+    function showMessage(
+        message
+    ) {
 
         if (resultMessage) {
 
@@ -1156,9 +1413,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // SET TEXT
-    // --------------------------------------------------------
+    // ========================================================
 
     function setText(
         elementId,
@@ -1182,16 +1439,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // GET VALUE
-    // --------------------------------------------------------
+    // ========================================================
 
     function getValue(
         object,
         keys
     ) {
 
-        for (const key of keys) {
+        for (
+            const key of keys
+        ) {
 
             if (
                 object &&
@@ -1206,16 +1465,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
 
+
         return "—";
 
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // FORMAT CURRENCY
-    // --------------------------------------------------------
+    // ========================================================
 
-    function formatCurrency(value) {
+    function formatCurrency(
+        value
+    ) {
 
         if (
             value === null ||
@@ -1256,11 +1518,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // FORMAT DATE
-    // --------------------------------------------------------
+    // ========================================================
 
-    function formatDate(value) {
+    function formatDate(
+        value
+    ) {
 
         if (
             value === null ||
@@ -1303,11 +1567,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // STATUS BADGE
-    // --------------------------------------------------------
+    // ========================================================
 
-    function createStatusBadge(status) {
+    function createStatusBadge(
+        status
+    ) {
 
         if (
             status === null ||
@@ -1328,7 +1594,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const className =
             cleanStatus
                 .toLowerCase()
-                .replace(/\s+/g, "-");
+                .replace(
+                    /\s+/g,
+                    "-"
+                );
 
 
         return `
@@ -1340,11 +1609,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // ESCAPE HTML
-    // --------------------------------------------------------
+    // ========================================================
 
-    function escapeHtml(value) {
+    function escapeHtml(
+        value
+    ) {
 
         const div =
             document.createElement(
@@ -1359,6 +1630,15 @@ document.addEventListener("DOMContentLoaded", function () {
         return div.innerHTML;
 
     }
+
+
+    // ========================================================
+    // INITIALIZATION MESSAGE
+    // ========================================================
+
+    console.log(
+        "Finance Date Recovery Tool - Date Recovery initialized."
+    );
 
 });
 
