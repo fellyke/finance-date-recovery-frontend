@@ -8,6 +8,34 @@
 
 
 /* ============================================================
+   GLOBAL PAGE LOADING OVERLAY
+   ============================================================ */
+
+let activeApiRequests = 0;
+
+function updateLoadingOverlay() {
+    const overlay = document.getElementById("loadingOverlay");
+
+    if (!overlay) {
+        return;
+    }
+
+    if (activeApiRequests > 0) {
+        overlay.classList.remove("hidden");
+    } else {
+        overlay.classList.add("hidden");
+    }
+}
+
+// Hide the initial loading screen when the page is ready,
+// unless an API request is still running.
+window.addEventListener("load", function () {
+    updateLoadingOverlay();
+});
+
+
+
+/* ============================================================
    API CONFIGURATION
    ============================================================ */
 
