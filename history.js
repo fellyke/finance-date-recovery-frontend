@@ -1,6 +1,6 @@
 
 // ============================================================
-// FINANCE DATE RECOVERY TOOL
+// Credit Date Recovery Tool
 // HISTORY.JS
 // RECOVERY HISTORY MANAGEMENT
 // ============================================================

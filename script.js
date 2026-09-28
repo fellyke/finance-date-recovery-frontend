@@ -2,7 +2,7 @@
 "use strict";
 
 /* ============================================================
-   FINANCE DATE RECOVERY TOOL
+   Credit Date Recovery Tool
    SHARED FRONTEND SCRIPT
    ============================================================ */
 
@@ -42,7 +42,7 @@ window.addEventListener("load", function () {
 const API_BASE_URL = "https://finance-date-recovery-backend.onrender.com/api";
 
 const APP_CONFIG = {
-    appName: "Finance Date Recovery Tool",
+    appName: "Credit Date Recovery Tool",
     apiBaseUrl: API_BASE_URL,
     requestTimeout: 30000,
     storagePrefix: "financeRecovery_"
@@ -1426,6 +1426,5 @@ window.FinanceRecovery = {
     /* API */
 
     checkApiConnection
-
 };
 

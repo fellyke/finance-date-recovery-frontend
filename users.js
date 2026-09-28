@@ -1,5 +1,5 @@
 // ============================================================
-// FINANCE DATE RECOVERY TOOL
+// Credit Date Recovery Tool
 // users.js
 // Frontend User Management
 // ============================================================

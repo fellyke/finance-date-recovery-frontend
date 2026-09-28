@@ -1,6 +1,6 @@
 
 // ============================================================
-// FINANCE DATE RECOVERY TOOL
+// Credit Date Recovery Tool
 // UPLOADED-FILES.JS
 // UPLOADED FILES MANAGEMENT
 // ============================================================

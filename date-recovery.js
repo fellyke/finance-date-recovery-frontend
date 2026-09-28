@@ -2,7 +2,7 @@
 "use strict";
 
 // ============================================================
-// FINANCE DATE RECOVERY TOOL
+// Credit Date Recovery Tool
 // DATE-RECOVERY.JS
 // ============================================================
 
@@ -1637,7 +1637,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // ========================================================
 
     console.log(
-        "Finance Date Recovery Tool - Date Recovery initialized."
+        "Credit Date Recovery Tool - Date Recovery initialized."
     );
 
 });

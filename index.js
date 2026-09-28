@@ -1,7 +1,7 @@
 "use strict";
 
 // ============================================================
-// FINANCE DATE RECOVERY TOOL
+// Credit Date Recovery Tool
 // index.js
 // LOGIN
 // ============================================================

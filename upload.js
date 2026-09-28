@@ -1,6 +1,6 @@
 
 // ============================================================
-// FINANCE DATE RECOVERY TOOL
+// Credit Date Recovery Tool
 // UPLOAD.JS
 // ============================================================
 
@@ -1384,7 +1384,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     console.log(
-        "Finance Date Recovery Tool"
+        "Credit Date Recovery Tool"
     );
 
     console.log(

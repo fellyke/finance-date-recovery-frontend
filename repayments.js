@@ -2,7 +2,7 @@
 "use strict";
 
 // ============================================================
-// FINANCE DATE RECOVERY TOOL
+// Credit Date Recovery Tool
 // REPAYMENTS.JS
 // ============================================================
 
@@ -3183,7 +3183,7 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     console.log(
-        "Finance Date Recovery Tool - Repayments"
+        "Credit Date Recovery Tool - Repayments"
     );
 
     console.log(
