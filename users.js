@@ -53,6 +53,7 @@ function notify(title, message, type = "success") {
         showNotification(
             title,
             message,
+            
             type
         );
 
