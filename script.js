@@ -1,4 +1,3 @@
-
 "use strict";
 
 /* ============================================================
@@ -13,7 +12,13 @@
 
 let activeApiRequests = 0;
 
+
+/* ------------------------------------------------------------
+   UPDATE LOADING OVERLAY
+   ------------------------------------------------------------ */
+
 function updateLoadingOverlay() {
+
     const overlay = document.getElementById("loadingOverlay");
 
     if (!overlay) {
@@ -21,31 +26,73 @@ function updateLoadingOverlay() {
     }
 
     if (activeApiRequests > 0) {
+
         overlay.classList.remove("hidden");
+
     } else {
+
         overlay.classList.add("hidden");
     }
 }
 
-// Hide the initial loading screen when the page is ready,
-// unless an API request is still running.
-window.addEventListener("load", function () {
-    updateLoadingOverlay();
-});
 
+/* ------------------------------------------------------------
+   SHOW LOADER
+   ------------------------------------------------------------ */
+
+function startGlobalLoader() {
+
+    activeApiRequests++;
+
+    updateLoadingOverlay();
+}
+
+
+/* ------------------------------------------------------------
+   HIDE LOADER
+   ------------------------------------------------------------ */
+
+function stopGlobalLoader() {
+
+    activeApiRequests--;
+
+    if (activeApiRequests < 0) {
+        activeApiRequests = 0;
+    }
+
+    updateLoadingOverlay();
+}
+
+
+/* ------------------------------------------------------------
+   PAGE LOAD
+   ------------------------------------------------------------ */
+
+window.addEventListener("load", function () {
+
+    updateLoadingOverlay();
+
+});
 
 
 /* ============================================================
    API CONFIGURATION
    ============================================================ */
 
-const API_BASE_URL = "https://finance-date-recovery-backend.onrender.com/api";
+const API_BASE_URL =
+    "https://finance-date-recovery-backend.onrender.com/api";
+
 
 const APP_CONFIG = {
+
     appName: "Credit Date Recovery Tool",
+
     apiBaseUrl: API_BASE_URL,
+
     requestTimeout: 30000,
+
     storagePrefix: "financeRecovery_"
+
 };
 
 
@@ -185,8 +232,16 @@ async function apiRequest(
     options = {}
 ) {
 
+    /* --------------------------------------------------------
+       START GLOBAL LOADER
+       -------------------------------------------------------- */
+
+    startGlobalLoader();
+
+
     const controller =
         new AbortController();
+
 
     const timeout =
         setTimeout(() => {
@@ -207,6 +262,7 @@ async function apiRequest(
             ...getAuthHeaders(),
 
             ...(options.headers || {})
+
         };
 
 
@@ -234,7 +290,7 @@ async function apiRequest(
 
 
         /* ----------------------------------------------------
-           FETCH
+           FETCH REQUEST
            ---------------------------------------------------- */
 
         const response =
@@ -298,6 +354,7 @@ async function apiRequest(
             error.status =
                 response.status;
 
+
             error.data =
                 data;
 
@@ -313,7 +370,7 @@ async function apiRequest(
 
 
         /* ----------------------------------------------------
-           TIMEOUT
+           TIMEOUT ERROR
            ---------------------------------------------------- */
 
         if (
@@ -346,7 +403,20 @@ async function apiRequest(
 
     } finally {
 
+
+        /* ----------------------------------------------------
+           CLEAR REQUEST TIMEOUT
+           ---------------------------------------------------- */
+
         clearTimeout(timeout);
+
+
+        /* ----------------------------------------------------
+           STOP GLOBAL LOADER
+           ---------------------------------------------------- */
+
+        stopGlobalLoader();
+
     }
 }
 
@@ -492,7 +562,9 @@ async function loginUser(
         );
 
 
-    /* Save token */
+    /* --------------------------------------------------------
+       SAVE TOKEN
+       -------------------------------------------------------- */
 
     if (
         response &&
@@ -505,7 +577,9 @@ async function loginUser(
     }
 
 
-    /* Save logged-in user */
+    /* --------------------------------------------------------
+       SAVE LOGGED-IN USER
+       -------------------------------------------------------- */
 
     if (
         response &&
@@ -576,6 +650,7 @@ function initializeLogoutButtons() {
                 event.preventDefault();
 
                 logoutUser();
+
             }
         );
 
@@ -711,18 +786,9 @@ function showNotification(
     duration = 4000
 ) {
 
-    /*
-       Backwards compatibility:
-
-       If called like:
-
-       showNotification(
-           "Something went wrong",
-           "error"
-       );
-
-       it will still work.
-    */
+    /* --------------------------------------------------------
+       BACKWARDS COMPATIBILITY
+       -------------------------------------------------------- */
 
     if (
         (
@@ -736,8 +802,11 @@ function showNotification(
     ) {
 
         type = message;
+
         message = title;
-        title = getNotificationTitle(type);
+
+        title =
+            getNotificationTitle(type);
     }
 
 
@@ -954,11 +1023,12 @@ function showNotification(
     }
 
 
-    /* Return notification */
-
     return {
+
         element: notification,
+
         close: closeNotification
+
     };
 }
 
@@ -1034,7 +1104,7 @@ function showLoading(
 
 
 /* ============================================================
-   LOADING
+   BUTTON LOADING
    ============================================================ */
 
 function setLoading(
@@ -1347,6 +1417,14 @@ document.addEventListener(
             APP_CONFIG.apiBaseUrl
         );
 
+
+        /*
+           Make sure the loader starts in the
+           correct state when the page opens.
+        */
+
+        updateLoadingOverlay();
+
     }
 );
 
@@ -1373,6 +1451,13 @@ window.FinanceRecovery = {
     apiPatch,
     apiDelete,
     apiUpload,
+
+
+    /* Global loader */
+
+    startGlobalLoader,
+    stopGlobalLoader,
+    updateLoadingOverlay,
 
 
     /* Authentication */
@@ -1423,8 +1508,8 @@ window.FinanceRecovery = {
     removeLocalData,
 
 
-    /* API */
+    /* API health */
 
     checkApiConnection
-};
 
+};
